@@ -1,0 +1,8 @@
+README.md
+setup.py
+pyprocessing/__init__.py
+pyprocessing.egg-info/PKG-INFO
+pyprocessing.egg-info/SOURCES.txt
+pyprocessing.egg-info/dependency_links.txt
+pyprocessing.egg-info/requires.txt
+pyprocessing.egg-info/top_level.txt

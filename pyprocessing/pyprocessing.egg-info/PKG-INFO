@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: pyprocessing
+Version: 0.1
+Summary: A simpler preprocessing method for machine learning
+Home-page: http://github.com/storborg/funniest
+Author: ['Luís Miguel Matos', 'Paulo Cortez', 'Rui Mendes']
+Author-email: luis.matos@dsi.uminho.pt
+License: MIT
+Description: A simple preprocessing method. 
+        At the moment it offers PCP method and the IDF method as presented in the papers 
+        https://doi.org/10.1109/IJCNN.2019.8851888 & https://ieeexplore.ieee.org/document/8710472 respectively.
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
