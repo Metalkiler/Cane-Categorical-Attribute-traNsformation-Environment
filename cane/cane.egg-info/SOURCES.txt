@@ -1,0 +1,8 @@
+README.md
+setup.py
+cane/__init__.py
+cane.egg-info/PKG-INFO
+cane.egg-info/SOURCES.txt
+cane.egg-info/dependency_links.txt
+cane.egg-info/requires.txt
+cane.egg-info/top_level.txt
