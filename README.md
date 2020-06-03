@@ -18,7 +18,7 @@ At the moment offers 3 preprocessing methods:
 To install this package please run the following command
 
 ``` cmd
-pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple cane 
+pip install cane 
 
 ```
 It is still in test version, so any feedback would be appreciated
