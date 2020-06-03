@@ -4,9 +4,9 @@ CANE is a simpler but powerful preprocessing method for machine learning.
 
 At the moment offers 3 preprocessing methods:
 
---> The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to perc percent) into a single level as presented in (https://doi.org/10.1109/IJCNN.2019.8851888).
+--> The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to "perc" percent) into a single level as presented in (https://doi.org/10.1109/IJCNN.2019.8851888), which, for example, can be "Others" category. It can be useful when dealing with several amounts of categorical information (e.g., city data).
 
---> The Inverse Document Frequency (IDF) codifies the levels into frequency values, where the closer to 0 means, the more frequent it is (https://ieeexplore.ieee.org/document/8710472). 
+--> The Inverse Document Frequency (IDF) codifies the categorical levels into frequency values, where the closer to 0 means, the more frequent it is (https://ieeexplore.ieee.org/document/8710472). 
 
 --> Finally it also has implemented a simpler standard One-Hot-Encoding method.
 
@@ -21,10 +21,12 @@ To install this package please run the following command
 pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple cane 
 
 ```
-It is still in test version, so any feedback would be appriciated
+It is still in test version, so any feedback would be appreciated
 
 
 For questions and other suggestions contact luis.matos@dsi.uminho.pt
+
+
 # Example
 ``` python
 import pandas as pd
