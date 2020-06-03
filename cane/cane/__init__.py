@@ -16,78 +16,20 @@ from math import ceil
 
 import numpy as np
 import pandas as pd
+from pqdm.processes import pqdm
+from functools import partial
 
 
-def PCP_Data(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others"):
+def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
     """
     The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to perc percent) into a
     single level. It works by first sorting the feature levels according to their frequency in the training data.
     Then, the least frequent levels (summing up to a threshold percentage of P ) are merged into a single category
-    denoted as "Others".
-    Example:
-        import pandas as pd
-        import cane
-        x=["a","a","a","b","b","b","b","b","c","c","c","c","c","c","c","d"]
-        df=pd.DataFrame({"x":x,"x2":x})
-        dataPCP, dicionary = cane.PCP_Data(df.copy()) #always send a copy of the dataframe
-    :param mergeCategory: Category for merging the data (by default "Others")
-    :param dataset: dataset to transform
-    :param perc: threshold percentage of P
-    :return: tuple containing the "Dataset" transformed and the dictionary for latter usage (Info)
-
-
-
+    denoted as "Others" for a Single Column.
     """
-    PCP_Config = {}
-
-    for column in dataset:
-        dataset[column] = PCP_Single(f=dataset[column], perc=perc,
-                                     mergeCategory=mergeCategory)  # já converte para número depois!
-        name = dataset[column]
-        dataset[column] = dataset[column].astype("category")
-
-        PCP_Config[column] = dict(zip(np.unique(name), np.unique(dataset[column])))
-    return dataset, PCP_Config
-
-
-def IDF_Data(dataset):
-    """
-    The Inverse Document Frequency (IDF) uses f(x)= log(n/f_x),
-    where n is the length of x and f_x is the frequency of x.
-    Example:
-        import pandas as pd
-        import cane
-        x=["a","a","a","b","b","b","b","b","c","c","c","c","c","c","c","d"]
-        df=pd.DataFrame({"x":x,"x2":x})
-        dataIDF = cane.IDF_Data(df.copy()) #always send a copy of the dataframe
-    :param dataset: dataset to transform
-
-    :return: Dataset with the IDF transformation
-    """
-
-    for column in dataset:
-        dataset[column] = IDF_Single(f=dataset[column])  # já converte para número depois!
-
-    return dataset
-
-
-def PCP_Single(f, perc=0.05, mergeCategory="Others"):
-    """
-
-    The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to perc percent) into a
-    single level. It works by first sorting the feature levels according to their frequency in the training data.
-    Then, the least frequent levels (summing up to a threshold percentage of P ) are merged into a single category
-    denoted as "Others".
-
-    :param mergeCategory: Category for merging the data (by default "Others")
-    :param perc: the threshold percentage P
-
-
-    """
-
     x = f.value_counts()
     N = len(f)
-    CPercent = ceil(len(f) * perc)
+    CPercent = ceil(len(f) * perc_inner)
     tbc = f.value_counts()
     sums = 0
     a = []
@@ -99,22 +41,59 @@ def PCP_Single(f, perc=0.05, mergeCategory="Others"):
     f2 = []
     for i in f:
         if i not in np.array(a):
-            f2.append(mergeCategory)
+            f2.append(mergeCategoryinner)
         else:
             f2.append(i)
     fTreated = pd.Series(f2)
     return fTreated
 
 
-def IDF_Single(f):
+def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1):
+    """
+    The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to perc percent) into a
+    single level. It works by first sorting the feature levels according to their frequency in the training data.
+    Then, the least frequent levels (summing up to a threshold percentage of P ) are merged into a single category
+    denoted as "Others", it uses all the dataset!
+
+    :param mergeCategory: Category for merging the data (by default "Others")
+    :param dataset: dataset to transform
+    :param perc: threshold percentage of P
+    :return: tuple containing the "Dataset" transformed and the dictionary for latter usage (Info)
+
+
+
     """
 
-    The Inverse Document Frequency (IDF) uses f(x)= log(n/f_x),
-    where n is the length of x and f_x is the frequency of x.
+    PCP_Config = {}
+    TransformedData = dataset.copy()
+    dfFinal = pd.DataFrame()
+    if not (isinstance(TransformedData, pd.DataFrame)):
+        raise Exception("Dataset needs to be of type Pandas")
+    if perc > 1:
+        raise ValueError("Percentage goes from 0 to 1, which above 1 means above 100%")
+    if isinstance(TransformedData, pd.DataFrame) and perc <= 1:
+        columns_Processing = []
+        columnsOld = []
+        for column in TransformedData:
+            columns_Processing.append(TransformedData[column])
+            columnsOld.append(column)
+        func = partial(__pcp_single__, perc_inner=perc, mergeCategoryinner=mergeCategory)
+
+        d = pqdm(columns_Processing, func, n_jobs=n_coresJob)
+
+        for i in d:
+            dfFinal = pd.concat([dfFinal, i], axis=1)
+
+        dfFinal.columns = columnsOld
+        for column in dfFinal:
+            name = dfFinal[column]
+            dfFinal[column] = dfFinal[column].astype("category")
+
+            PCP_Config[column] = dict(zip(np.unique(name), np.unique(dfFinal[column])))
+        return dfFinal, PCP_Config
 
 
-    """
-
+def __idf_single__(f):
     x = f.value_counts(sort=False)
     N = len(f)
     res = f.copy()
@@ -124,3 +103,87 @@ def IDF_Single(f):
 
     resTreated = res.replace(idf)
     return resTreated
+
+
+def idf(dataset, n_coresJob=1):
+    """
+    The Inverse Document Frequency (IDF) uses f(x)= log(n/f_x),
+    where n is the length of x and f_x is the frequency of x.
+    Example:
+        import pandas as pd
+        import cane
+        x=["a","a","a","b","b","b","b","b","c","c","c","c","c","c","c","d"]
+        df=pd.DataFrame({"x":x,"x2":x})
+        dataIDF = cane.IDF_Data(df.copy()) #always send a copy of the dataframe
+    :param n_coresJob: Number of cores to use
+    :param dataset: dataset to transform
+
+    :return: Dataset with the IDF transformation
+    """
+
+    TransformedData = dataset.copy()
+    dfFinal = pd.DataFrame()
+    columns_Processing = []
+    columnsOld = []
+    if not (isinstance(TransformedData, pd.DataFrame)):
+        raise Exception("Dataset needs to be of type Pandas")
+    else:
+
+        for column in TransformedData:
+            columns_Processing.append(TransformedData[column])
+            columnsOld.append(column)
+
+        d = pqdm(columns_Processing, __idf_single__, n_jobs=n_coresJob)
+
+        for i in d:
+            dfFinal = pd.concat([dfFinal, i], axis=1)
+
+        dfFinal.columns = columnsOld
+        return dfFinal
+
+
+def __one_hot_single__(dataset, column_prefix=None):
+    """ Application of the one-hot encoding preprocessing (e.g., [0,0,1
+                                                                 0,1,0])
+        Note: if you use the column_prefixer it is not possible to undo the one_hot encoding preprocessing
+        If column_prefix is column then the column names will be used, else it will use the custom name provided
+        :return: A new Dataset with the one-hot encoding transformation
+    """
+    if column_prefix is None:
+        data = pd.get_dummies(dataset)
+    else:
+        if column_prefix.lower() == 'column':
+
+            data = pd.get_dummies(dataset, prefix=dataset.name)
+        else:
+            data = pd.get_dummies(dataset, prefix=column_prefix)
+
+    return data
+
+
+def one_hot(dataset, column_prefix=None, n_coresJob = 1):
+    """ Application of the one-hot encoding preprocessing (e.g., [0,0,1
+                                                                 0,1,0])
+        Note: if you use the column_prefixer it is not possible to undo the one_hot encoding preprocessing
+        If column_prefix is column then the column names will be used, else it will use the custom name provided
+        :return: A new Dataset with the one-hot encoding transformation
+    """
+    dfFinal = pd.DataFrame()
+    columns_Processing = []
+    columnsOld = []
+
+    if not (isinstance(dataset, pd.DataFrame)):
+        raise Exception("Dataset needs to be of type Pandas")
+    else:
+
+        for column in dataset:
+            columns_Processing.append(dataset[column])
+            columnsOld.append(column)
+
+        func = partial(__one_hot_single__, column_prefix=column_prefix)
+        d = pqdm(columns_Processing, func, n_jobs=n_coresJob)
+
+        for i in d:
+            dfFinal = pd.concat([dfFinal, i], axis=1)
+
+    return dfFinal
