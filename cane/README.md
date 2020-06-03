@@ -31,9 +31,8 @@ For questions and other suggestions contact luis.matos@dsi.uminho.pt
 ``` python
 import pandas as pd
 import cane
-x = ["a", "a", "a", "b", "b", "b", "b", "b", "c", "c", "c", "c", "c", "c", "c", "d"] * 10000  # replicates the list
-df = pd.DataFrame({"x": x, "x2": x, "x3": x, "x4": x, "x5": x, "x6": x, "x7": x, "x8": x, "x9": x, "x10": x, "x11": x,
-                   "x12": x})  # df with 12 columns
+x = [k for s in ([k] * n for k, n in [('a', 30000), ('b', 50000), ('c', 70000), ('d', 10000), ('e', 1000)]) for k in s]
+df = pd.DataFrame({f'x{i}' : x for i in range(1, 13)})
 
 dataPCP, dicionary = cane.pcp(df)  # uses the PCP method and only 1 core
 dataPCP, dicionary = cane.pcp(df, n_coresJob=2)  # uses the PCP method and only 2 cores

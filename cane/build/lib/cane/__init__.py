@@ -18,34 +18,22 @@ import numpy as np
 import pandas as pd
 from pqdm.processes import pqdm
 from functools import partial
+import itertools
 
 
 def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
     """
-    The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to perc percent) into a
-    single level. It works by first sorting the feature levels according to their frequency in the training data.
-    Then, the least frequent levels (summing up to a threshold percentage of P ) are merged into a single category
-    denoted as "Others" for a Single Column.
+        The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to perc percent) into a
+        single level. It works by first sorting the feature levels according to their frequency in the training data.
+        Then, the least frequent levels (summing up to a threshold percentage of P ) are merged into a single category
+        denoted as "Others" for a Single Column.
     """
-    x = f.value_counts()
-    N = len(f)
-    CPercent = ceil(len(f) * perc_inner)
-    tbc = f.value_counts()
-    sums = 0
-    a = []
-    for i in range(0, len(tbc)):
-        sums = sums + tbc[i]
-        if sums >= CPercent:
-            a.append(tbc.index[0:i + 1])  # keep last level!
-            break
-    f2 = []
-    for i in f:
-        if i not in np.array(a):
-            f2.append(mergeCategoryinner)
-        else:
-            f2.append(i)
-    fTreated = pd.Series(f2)
-    return fTreated
+
+    CPercent = ceil(len(f) * (1 - perc_inner))
+
+    accumulated = itertools.accumulate(f.value_counts().items(), lambda a, b: (b[0], a[1] + b[1]))
+    kept = {P[0] for P in itertools.takewhile(lambda a: a[1] <= CPercent, accumulated)}
+    return pd.Series(X if X in kept else mergeCategoryinner for X in f)
 
 
 def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1):
@@ -55,6 +43,7 @@ def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1)
     Then, the least frequent levels (summing up to a threshold percentage of P ) are merged into a single category
     denoted as "Others", it uses all the dataset!
 
+    :param n_coresJob: Number of cores to use for the preprocessing
     :param mergeCategory: Category for merging the data (by default "Others")
     :param dataset: dataset to transform
     :param perc: threshold percentage of P
@@ -67,10 +56,8 @@ def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1)
     PCP_Config = {}
     TransformedData = dataset.copy()
     dfFinal = pd.DataFrame()
-    if not (isinstance(TransformedData, pd.DataFrame)):
-        raise Exception("Dataset needs to be of type Pandas")
-    if perc > 1:
-        raise ValueError("Percentage goes from 0 to 1, which above 1 means above 100%")
+    assert isinstance(TransformedData, pd.DataFrame), "Dataset needs to be of type Pandas"
+    assert 0 <= perc <= 1, "Percentage goes from 0 to 1, it may neither be negative nor above 1"
     if isinstance(TransformedData, pd.DataFrame) and perc <= 1:
         columns_Processing = []
         columnsOld = []
@@ -161,7 +148,7 @@ def __one_hot_single__(dataset, column_prefix=None):
     return data
 
 
-def one_hot(dataset, column_prefix=None, n_coresJob = 1):
+def one_hot(dataset, column_prefix=None, n_coresJob=1):
     """ Application of the one-hot encoding preprocessing (e.g., [0,0,1
                                                                  0,1,0])
         Note: if you use the column_prefixer it is not possible to undo the one_hot encoding preprocessing

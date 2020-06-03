@@ -8,7 +8,7 @@ with open('req.txt') as f:
 
 
 setuptools.setup(name='cane',
-                 version='0.0.1.1',
+                 version='0.0.1.4',
                  description='Cane - Categorical Attribute traNsformation Environment',
                  author='Luís Miguel Matos, Paulo Cortez, Rui Mendes',
                  license='MIT',
