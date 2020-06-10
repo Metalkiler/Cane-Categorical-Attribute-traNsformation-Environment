@@ -11,14 +11,14 @@
 #     https://ieeexplore.ieee.org/document/8710472
 #     http://hdl.handle.net/1822/61586
 
+import itertools
 import math
+from functools import partial
 from math import ceil
 
 import numpy as np
 import pandas as pd
 from pqdm.processes import pqdm
-from functools import partial
-import itertools
 
 
 def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
