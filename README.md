@@ -11,7 +11,7 @@ At the moment offers 3 preprocessing methods:
 --> Finally it also has implemented a simpler standard One-Hot-Encoding method.
 
 
-
+ 
 
 # Instalation
 
