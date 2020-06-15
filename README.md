@@ -21,7 +21,7 @@ To install this package please run the following command
 pip install cane 
 
 ```
-Any feedback would be appreciated
+Any feedback would be appreciated.
 
 
 For questions and other suggestions contact luis.matos@dsi.uminho.pt
