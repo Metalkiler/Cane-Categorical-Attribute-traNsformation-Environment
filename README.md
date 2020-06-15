@@ -15,7 +15,7 @@ At the moment offers 3 preprocessing methods:
 
 # Instalation
 
-To install this package please run the following command
+To install this package please run the following command:
 
 ``` cmd
 pip install cane 
