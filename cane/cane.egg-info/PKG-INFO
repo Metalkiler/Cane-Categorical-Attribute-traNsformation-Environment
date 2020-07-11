@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: cane
-Version: 0.0.1.4
+Version: 0.0.1.6.1
 Summary: Cane - Categorical Attribute traNsformation Environment
 Home-page: https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment
 Author: Luís Miguel Matos, Paulo Cortez, Rui Mendes
@@ -21,7 +21,7 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         
         
         
-        # Instalation
+        # Installation
         
         To install this package please run the following command
         
@@ -29,9 +29,9 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         pip install cane 
         
         ```
-        It is still in test version, so any feedback would be appreciated
         
-        
+        # Suggestions and feedback
+        Any feedback would be appreciated.
         For questions and other suggestions contact luis.matos@dsi.uminho.pt
         
         
@@ -44,8 +44,11 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         
         dataPCP, dicionary = cane.pcp(df)  # uses the PCP method and only 1 core
         dataPCP, dicionary = cane.pcp(df, n_coresJob=2)  # uses the PCP method and only 2 cores
+        dataPCP, dicionary = cane.pcp(df, n_coresJob=2,disableLoadBar = False)  # With Progress Bar
+        
         dataIDF = cane.idf(df)  # uses the IDF method and only 1 core
         dataIDF = cane.idf(df, n_coresJob=2)  # uses the IDF method and only 2 core
+        dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False)  # With Progress Bar
         
         dataH = cane.one_hot(df)  # without a column prefixer
         dataH2 = cane.one_hot(df, column_prefix='column')  # it will use the original column name prefix
@@ -55,6 +58,11 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         dataH4 = cane.one_hot(df, column_prefix='column', n_coresJob=2)  # it will use the original column name prefix
         # (useful for when dealing with id number columns)
         # with 2 cores
+        
+        dataH4 = cane.one_hot(df, column_prefix='column', n_coresJob=2
+                              ,disableLoadBar = False)  # With Progress Bar Active!
+        # with 2 cores
+        
         ```
         
 Platform: UNKNOWN

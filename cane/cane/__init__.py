@@ -11,14 +11,14 @@
 #     https://ieeexplore.ieee.org/document/8710472
 #     http://hdl.handle.net/1822/61586
 
-import itertools
 import math
-from functools import partial
 from math import ceil
 
 import numpy as np
 import pandas as pd
 from pqdm.processes import pqdm
+from functools import partial
+import itertools
 
 
 def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
@@ -36,13 +36,14 @@ def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
     return pd.Series(X if X in kept else mergeCategoryinner for X in f)
 
 
-def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1):
+def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1, disableLoadBar=True):
     """
     The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to perc percent) into a
     single level. It works by first sorting the feature levels according to their frequency in the training data.
     Then, the least frequent levels (summing up to a threshold percentage of P ) are merged into a single category
     denoted as "Others", it uses all the dataset!
 
+    :param disableLoadBar: Chooses if you want load bar or not (default = True)
     :param n_coresJob: Number of cores to use for the preprocessing
     :param mergeCategory: Category for merging the data (by default "Others")
     :param dataset: dataset to transform
@@ -66,7 +67,7 @@ def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1)
             columnsOld.append(column)
         func = partial(__pcp_single__, perc_inner=perc, mergeCategoryinner=mergeCategory)
 
-        d = pqdm(columns_Processing, func, n_jobs=n_coresJob)
+        d = pqdm(columns_Processing, func, n_jobs=n_coresJob, disable=disableLoadBar)
 
         for i in d:
             dfFinal = pd.concat([dfFinal, i], axis=1)
@@ -92,16 +93,12 @@ def __idf_single__(f):
     return resTreated
 
 
-def idf(dataset, n_coresJob=1):
+def idf(dataset, n_coresJob=1, disableLoadBar=True):
     """
     The Inverse Document Frequency (IDF) uses f(x)= log(n/f_x),
     where n is the length of x and f_x is the frequency of x.
-    Example:
-        import pandas as pd
-        import cane
-        x=["a","a","a","b","b","b","b","b","c","c","c","c","c","c","c","d"]
-        df=pd.DataFrame({"x":x,"x2":x})
-        dataIDF = cane.IDF_Data(df.copy()) #always send a copy of the dataframe
+
+    :param disableLoadBar: Chooses if you want load bar or not (default = True)
     :param n_coresJob: Number of cores to use
     :param dataset: dataset to transform
 
@@ -112,15 +109,14 @@ def idf(dataset, n_coresJob=1):
     dfFinal = pd.DataFrame()
     columns_Processing = []
     columnsOld = []
-    if not (isinstance(TransformedData, pd.DataFrame)):
-        raise Exception("Dataset needs to be of type Pandas")
-    else:
+    assert isinstance(TransformedData, pd.DataFrame), "Dataset needs to be of type Pandas"
+    if isinstance(TransformedData, pd.DataFrame):
 
         for column in TransformedData:
             columns_Processing.append(TransformedData[column])
             columnsOld.append(column)
 
-        d = pqdm(columns_Processing, __idf_single__, n_jobs=n_coresJob)
+        d = pqdm(columns_Processing, __idf_single__, n_jobs=n_coresJob, disable=disableLoadBar)
 
         for i in d:
             dfFinal = pd.concat([dfFinal, i], axis=1)
@@ -134,6 +130,7 @@ def __one_hot_single__(dataset, column_prefix=None):
                                                                  0,1,0])
         Note: if you use the column_prefixer it is not possible to undo the one_hot encoding preprocessing
         If column_prefix is column then the column names will be used, else it will use the custom name provided
+        :param dataset: dataset to one-hot encode
         :return: A new Dataset with the one-hot encoding transformation
     """
     if column_prefix is None:
@@ -148,27 +145,31 @@ def __one_hot_single__(dataset, column_prefix=None):
     return data
 
 
-def one_hot(dataset, column_prefix=None, n_coresJob=1):
+def one_hot(dataset, column_prefix=None, n_coresJob=1, disableLoadBar=True):
     """ Application of the one-hot encoding preprocessing (e.g., [0,0,1
                                                                  0,1,0])
         Note: if you use the column_prefixer it is not possible to undo the one_hot encoding preprocessing
         If column_prefix is column then the column names will be used, else it will use the custom name provided
+        :param column_prefix:
+        :param n_coresJob: Number of cores you need for multiprocessing (e.g., 1 column per process)
+        :param disableLoadBar: Chooses if you want load bar or not (default = True)
+        :param dataset: dataset to one-hot encode
+
         :return: A new Dataset with the one-hot encoding transformation
     """
     dfFinal = pd.DataFrame()
     columns_Processing = []
     columnsOld = []
 
-    if not (isinstance(dataset, pd.DataFrame)):
-        raise Exception("Dataset needs to be of type Pandas")
-    else:
+    assert isinstance(dataset, pd.DataFrame), "Dataset needs to be of type Pandas"
+    if isinstance(dataset, pd.DataFrame):
 
         for column in dataset:
             columns_Processing.append(dataset[column])
             columnsOld.append(column)
 
         func = partial(__one_hot_single__, column_prefix=column_prefix)
-        d = pqdm(columns_Processing, func, n_jobs=n_coresJob)
+        d = pqdm(columns_Processing, func, n_jobs=n_coresJob, disable=disableLoadBar)
 
         for i in d:
             dfFinal = pd.concat([dfFinal, i], axis=1)
