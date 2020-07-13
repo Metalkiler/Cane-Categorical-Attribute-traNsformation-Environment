@@ -23,7 +23,7 @@ pip install cane
 ```
 
 # Suggestions and feedback
-Any feedback would be appreciated.
+Any feedback will be appreciated.
 For questions and other suggestions contact luis.matos@dsi.uminho.pt
 
 
