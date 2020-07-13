@@ -48,15 +48,14 @@ def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1,
     :param mergeCategory: Category for merging the data (by default "Others")
     :param dataset: dataset to transform
     :param perc: threshold percentage of P
-    :return: tuple containing the "Dataset" transformed and the dictionary for latter usage (Info)
+    :return: the "Dataset" transformed
 
 
 
     """
 
-    PCP_Config = {}
     TransformedData = dataset.copy()
-    dfFinal = pd.DataFrame()
+
     assert isinstance(TransformedData, pd.DataFrame), "Dataset needs to be of type Pandas"
     assert 0 <= perc <= 1, "Percentage goes from 0 to 1, it may neither be negative nor above 1"
     if isinstance(TransformedData, pd.DataFrame) and perc <= 1:
@@ -69,16 +68,21 @@ def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1,
 
         d = pqdm(columns_Processing, func, n_jobs=n_coresJob, disable=disableLoadBar)
 
-        for i in d:
-            dfFinal = pd.concat([dfFinal, i], axis=1)
+        data = [i for i in d]
+        dfFinal = pd.concat(data, axis=1)
 
         dfFinal.columns = columnsOld
-        for column in dfFinal:
-            name = dfFinal[column]
-            dfFinal[column] = dfFinal[column].astype("category")
 
-            PCP_Config[column] = dict(zip(np.unique(name), np.unique(dfFinal[column])))
-        return dfFinal, PCP_Config
+        return dfFinal
+
+
+def dic_pcp(dataset):
+    """
+    :param dataset: Dataset Transformed with the PCP
+    :return: Dictionary with the constitution of the PCP dataset for each column value
+    """
+    assert isinstance(dataset, pd.DataFrame), "Dataset needs to be of type Pandas"
+    return {k: {i: i for i in np.unique(v)} for k, v in dataset.items()}
 
 
 def __idf_single__(f):
@@ -106,7 +110,6 @@ def idf(dataset, n_coresJob=1, disableLoadBar=True):
     """
 
     TransformedData = dataset.copy()
-    dfFinal = pd.DataFrame()
     columns_Processing = []
     columnsOld = []
     assert isinstance(TransformedData, pd.DataFrame), "Dataset needs to be of type Pandas"
@@ -117,9 +120,8 @@ def idf(dataset, n_coresJob=1, disableLoadBar=True):
             columnsOld.append(column)
 
         d = pqdm(columns_Processing, __idf_single__, n_jobs=n_coresJob, disable=disableLoadBar)
-
-        for i in d:
-            dfFinal = pd.concat([dfFinal, i], axis=1)
+        data = [i for i in d]
+        dfFinal = pd.concat(data, axis=1)
 
         dfFinal.columns = columnsOld
         return dfFinal
@@ -171,7 +173,7 @@ def one_hot(dataset, column_prefix=None, n_coresJob=1, disableLoadBar=True):
         func = partial(__one_hot_single__, column_prefix=column_prefix)
         d = pqdm(columns_Processing, func, n_jobs=n_coresJob, disable=disableLoadBar)
 
-        for i in d:
-            dfFinal = pd.concat([dfFinal, i], axis=1)
+        data = [i for i in d]
+        dfFinal = pd.concat(data, axis=1)
 
     return dfFinal
