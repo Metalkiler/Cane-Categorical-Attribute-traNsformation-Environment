@@ -4,7 +4,7 @@ CANE is a simpler but powerful preprocessing method for machine learning.
 
 At the moment offers 3 preprocessing methods:
 
---> The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to "perc" percent) into a single level as presented in (https://doi.org/10.1109/IJCNN.2019.8851888), which, for example, can be "Others" category. It can be useful when dealing with several amounts of categorical information (e.g., city data). Also providing the dictionary with the transformations for each column.
+--> The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to "perc" percent) into a single level as presented in (https://doi.org/10.1109/IJCNN.2019.8851888), which, for example, can be "Others" category. It can be useful when dealing with several amounts of categorical information (e.g., city data).
 
 --> The Inverse Document Frequency (IDF) codifies the categorical levels into frequency values, where the closer to 0 means, the more frequent it is (https://ieeexplore.ieee.org/document/8710472). 
 
@@ -62,7 +62,7 @@ dataH4 = cane.one_hot(df, column_prefix='column', n_coresJob=2
 # with 2 cores
 
 #Time Measurement in 10 runs
-print("Time Measurment in 10 runs (unicore)")
+print("Time Measurement in 10 runs (unicore)")
 OT = timeit.timeit(lambda:cane.one_hot(df, column_prefix='column', n_coresJob=1),number = 10)
 IT = timeit.timeit(lambda:cane.idf(df),number = 10)
 PT = timeit.timeit(lambda:cane.pcp(df),number = 10)
@@ -70,8 +70,8 @@ print("One-Hot Time:",OT)
 print("IDF Time:",IT)
 print("PCP Time:",PT)
 
-#Time Measurment in 10 runs (multicore)
-print("Time Measurment in 10 runs (multicore)")
+#Time Measurement in 10 runs (multicore)
+print("Time Measurement in 10 runs (multicore)")
 OTM = timeit.timeit(lambda:cane.one_hot(df, column_prefix='column', n_coresJob=10),number = 10)
 ITM = timeit.timeit(lambda:cane.idf(df,n_coresJob=10),number = 10)
 PTM = timeit.timeit(lambda:cane.pcp(df,n_coresJob=10),number = 10)
