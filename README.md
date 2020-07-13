@@ -13,10 +13,9 @@ An example of this can be viewed by the following pdf:
     </embed>
 </object>
 
-![formula](https://render.githubusercontent.com/render/math?math=P=10 = -1)
 
 Which the 1,000 highest frequency values (decreasing order) for the user city attribute for the TEST traffic data (which contains a total of 10,690 levels).
-For this attribute and when $$\%$$, PCP selects only the most frequent 688 levels (dashed vertical line) merging the other 10,002 infrequent levels into the "Others" label.
+For this attribute and when <img src="https://render.githubusercontent.com/render/math?math=P=10">, PCP selects only the most frequent 688 levels (dashed vertical line) merging the other 10,002 infrequent levels into the "Others" label.
 
 This method results in 689 binary inputs, which is much less than the 10690 binary inputs required by the standard one-hot transform (reduction of $$\inline \frac{10690-689}{10690}=94\%$$)
 
