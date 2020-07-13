@@ -1,33 +1,40 @@
-# Cane - Categorical Attribute traNsformation Environment 
-CANE is a simpler but powerful preprocessing method for machine learning. 
+# Cane - Categorical Attribute traNsformation Environment
 
+CANE is a simpler but powerful preprocessing method for machine learning.
 
 At the moment offers 3 preprocessing methods:
 
---> The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to "perc" percent) into a single level as presented in (https://doi.org/10.1109/IJCNN.2019.8851888), which, for example, can be "Others" category. It can be useful when dealing with several amounts of categorical information (e.g., city data).
+--> The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to "perc" percent) into a single level as presented in (<https://doi.org/10.1109/IJCNN.2019.8851888>), which, for example, can be "Others" category. It can be useful when dealing with several amounts of categorical information (e.g., city data).
 
---> The Inverse Document Frequency (IDF) codifies the categorical levels into frequency values, where the closer to 0 means, the more frequent it is (https://ieeexplore.ieee.org/document/8710472). 
+An example of this can be viewed by the following figure:
+
+![cities](Imgs\cities.pdf)
+
+Which the 1,000 highest frequency values (decreasing order) for the user city attribute for the TEST traffic data (which contains a total of 10,690 levels).
+For this attribute and when $P=10\%$, PCP selects only the most frequent 688 levels (dashed vertical line) merging the other 10,002 infrequent levels into the ``Others'' label.
+This method results in 689 binary inputs, which is much less than the 10690 binary inputs required by the standard one-hot transform (reduction of $\frac{10690-689}{10690}=94$\%)
+
+--> The Inverse Document Frequency (IDF) codifies the categorical levels into frequency values, where the closer to 0 means, the more frequent it is (<https://ieeexplore.ieee.org/document/8710472>).
 
 --> Finally it also has implemented a simpler standard One-Hot-Encoding method.
-
-
-
 
 # Installation
 
 To install this package please run the following command
 
 ``` cmd
-pip install cane 
+pip install cane
 
 ```
 
 # Suggestions and feedback
+
 Any feedback will be appreciated.
 For questions and other suggestions contact luis.matos@dsi.uminho.pt
 
 
 # Example
+
 ``` python
 import pandas as pd
 import cane
@@ -81,3 +88,5 @@ print("PCP Time Multicore:",PTM)
 
 
 ```
+
+
