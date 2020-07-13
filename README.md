@@ -10,6 +10,15 @@ An example of this can be viewed by the following figure:
 
 ![cities](cities.pdf "Example case with PCP")
 
+
+<object data="https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/cities.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="http://yoursite.com/the.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/cities.pdf">Download PDF</a>.</p>
+    </embed>
+</object>
+
+
+
 Which the 1,000 highest frequency values (decreasing order) for the user city attribute for the TEST traffic data (which contains a total of 10,690 levels).
 For this attribute and when $P=10\%$, PCP selects only the most frequent 688 levels (dashed vertical line) merging the other 10,002 infrequent levels into the ``Others'' label.
 This method results in 689 binary inputs, which is much less than the 10690 binary inputs required by the standard one-hot transform (reduction of $\frac{10690-689}{10690}=94$\%)
