@@ -6,14 +6,10 @@ At the moment offers 3 preprocessing methods:
 
 --> The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to "perc" percent) into a single level as presented in (<https://doi.org/10.1109/IJCNN.2019.8851888>), which, for example, can be "Others" category. It can be useful when dealing with several amounts of categorical information (e.g., city data).
 
-An example of this can be viewed by the following figure:
-
-![cities](cities.pdf "Example case with PCP")
-
-
+An example of this can be viewed by the following pdf:
 <object data="https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/blob/master/cities.pdf" type="application/pdf" width="700px" height="700px">
     <embed src="https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/blob/master/cities.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/blob/master/cities.pdf">Download PDF</a>.</p>
+        <p><a href="https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/blob/master/cities.pdf">View PDF</a>.</p>
     </embed>
 </object>
 
