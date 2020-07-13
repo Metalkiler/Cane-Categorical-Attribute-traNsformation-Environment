@@ -68,8 +68,8 @@ def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1,
 
         d = pqdm(columns_Processing, func, n_jobs=n_coresJob, disable=disableLoadBar)
 
-        data = [i for i in d]
-        dfFinal = pd.concat(data, axis=1)
+
+        dfFinal = pd.concat([i for i in d], axis=1)
 
         dfFinal.columns = columnsOld
 
@@ -120,8 +120,8 @@ def idf(dataset, n_coresJob=1, disableLoadBar=True):
             columnsOld.append(column)
 
         d = pqdm(columns_Processing, __idf_single__, n_jobs=n_coresJob, disable=disableLoadBar)
-        data = [i for i in d]
-        dfFinal = pd.concat(data, axis=1)
+
+        dfFinal = pd.concat([i for i in d], axis=1)
 
         dfFinal.columns = columnsOld
         return dfFinal
@@ -173,7 +173,6 @@ def one_hot(dataset, column_prefix=None, n_coresJob=1, disableLoadBar=True):
         func = partial(__one_hot_single__, column_prefix=column_prefix)
         d = pqdm(columns_Processing, func, n_jobs=n_coresJob, disable=disableLoadBar)
 
-        data = [i for i in d]
-        dfFinal = pd.concat(data, axis=1)
+        dfFinal = pd.concat([i for i in d], axis=1)
 
     return dfFinal
