@@ -8,7 +8,7 @@ At the moment offers 3 preprocessing methods:
 
 An example of this can be viewed by the following figure:
 
-![cities](https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/tree/master/Imgs/cities.pdf)
+![cities](https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/tree/master/Imgs/cities.pdf "Example case with PCP")
 
 Which the 1,000 highest frequency values (decreasing order) for the user city attribute for the TEST traffic data (which contains a total of 10,690 levels).
 For this attribute and when $P=10\%$, PCP selects only the most frequent 688 levels (dashed vertical line) merging the other 10,002 infrequent levels into the ``Others'' label.
