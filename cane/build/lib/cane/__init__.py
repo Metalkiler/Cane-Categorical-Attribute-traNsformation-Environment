@@ -36,13 +36,14 @@ def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
     return pd.Series(X if X in kept else mergeCategoryinner for X in f)
 
 
-def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1, disableLoadBar=True):
+def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1, disableLoadBar=True, columns_use=None):
     """
     The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to perc percent) into a
     single level. It works by first sorting the feature levels according to their frequency in the training data.
     Then, the least frequent levels (summing up to a threshold percentage of P ) are merged into a single category
     denoted as "Others", it uses all the dataset!
 
+    :param columns_use: Specific columns to apply transformation(default None applies to every COLUMN).
     :param disableLoadBar: Chooses if you want load bar or not (default = True)
     :param n_coresJob: Number of cores to use for the preprocessing
     :param mergeCategory: Category for merging the data (by default "Others")
@@ -60,18 +61,29 @@ def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1,
     assert 0 <= perc <= 1, "Percentage goes from 0 to 1, it may neither be negative nor above 1"
     if isinstance(TransformedData, pd.DataFrame) and perc <= 1:
         columns_Processing = []
-        columnsOld = []
-        for column in TransformedData:
-            columns_Processing.append(TransformedData[column])
-            columnsOld.append(column)
+        if columns_use is not None:
+            assert all(flag in TransformedData.columns for flag in
+                       columns_use), "Use columns specific to the dataset given the columns provided are not found " \
+                                     + ' '.join([j for j in columns_use])
+            if set(columns_use).issubset(TransformedData.columns):
+
+                for column in columns_use:
+                    columns_Processing.append(TransformedData[column])
+
+        else:
+            for column in TransformedData:
+                columns_Processing.append(TransformedData[column])
         func = partial(__pcp_single__, perc_inner=perc, mergeCategoryinner=mergeCategory)
 
         d = pqdm(columns_Processing, func, n_jobs=n_coresJob, disable=disableLoadBar)
 
-
-        dfFinal = pd.concat([i for i in d], axis=1)
-
-        dfFinal.columns = columnsOld
+        if columns_use is not None:
+            dfFinal = pd.concat([i for i in d], axis=1)
+            dfFinal.columns = columns_use
+            dfFinal = pd.concat([dfFinal, TransformedData[TransformedData.columns.difference(columns_use,sort=False)]], axis=1,
+                                sort=True)
+        else:
+            dfFinal = pd.concat([i for i in d], axis=1)
 
         return dfFinal
 
@@ -97,11 +109,12 @@ def __idf_single__(f):
     return resTreated
 
 
-def idf(dataset, n_coresJob=1, disableLoadBar=True):
+def idf(dataset, n_coresJob=1, disableLoadBar=True, columns_use=None):
     """
     The Inverse Document Frequency (IDF) uses f(x)= log(n/f_x),
     where n is the length of x and f_x is the frequency of x.
 
+    :param columns_use: List of columns to use
     :param disableLoadBar: Chooses if you want load bar or not (default = True)
     :param n_coresJob: Number of cores to use
     :param dataset: dataset to transform
@@ -111,19 +124,31 @@ def idf(dataset, n_coresJob=1, disableLoadBar=True):
 
     TransformedData = dataset.copy()
     columns_Processing = []
-    columnsOld = []
     assert isinstance(TransformedData, pd.DataFrame), "Dataset needs to be of type Pandas"
     if isinstance(TransformedData, pd.DataFrame):
+        #
+        if columns_use is not None:
+            assert all(flag in TransformedData.columns for flag in
+                       columns_use), "Use columns specific to the dataset given the columns provided are not found " \
+                                     + ' '.join([j for j in columns_use])
+            if set(columns_use).issubset(TransformedData.columns):
 
-        for column in TransformedData:
-            columns_Processing.append(TransformedData[column])
-            columnsOld.append(column)
+                for column in columns_use:
+                    columns_Processing.append(TransformedData[column])
+
+        else:
+            for column in TransformedData:
+                columns_Processing.append(TransformedData[column])
 
         d = pqdm(columns_Processing, __idf_single__, n_jobs=n_coresJob, disable=disableLoadBar)
+        if columns_use is not None:
+            dfFinal = pd.concat([i for i in d], axis=1)
+            dfFinal = pd.concat([dfFinal, TransformedData[TransformedData.columns.difference(columns_use, sort=False)]],
+                                axis=1,
+                                sort=True)
+        else:
+            dfFinal = pd.concat([i for i in d], axis=1)
 
-        dfFinal = pd.concat([i for i in d], axis=1)
-
-        dfFinal.columns = columnsOld
         return dfFinal
 
 
@@ -147,11 +172,12 @@ def __one_hot_single__(dataset, column_prefix=None):
     return data
 
 
-def one_hot(dataset, column_prefix=None, n_coresJob=1, disableLoadBar=True):
+def one_hot(dataset, column_prefix=None, n_coresJob=1, disableLoadBar=True, columns_use=None):
     """ Application of the one-hot encoding preprocessing (e.g., [0,0,1
                                                                  0,1,0])
         Note: if you use the column_prefixer it is not possible to undo the one_hot encoding preprocessing
         If column_prefix is column then the column names will be used, else it will use the custom name provided
+        :param columns_use:
         :param column_prefix:
         :param n_coresJob: Number of cores you need for multiprocessing (e.g., 1 column per process)
         :param disableLoadBar: Chooses if you want load bar or not (default = True)
@@ -161,18 +187,29 @@ def one_hot(dataset, column_prefix=None, n_coresJob=1, disableLoadBar=True):
     """
     dfFinal = pd.DataFrame()
     columns_Processing = []
-    columnsOld = []
-
     assert isinstance(dataset, pd.DataFrame), "Dataset needs to be of type Pandas"
     if isinstance(dataset, pd.DataFrame):
+        if columns_use is not None:
+            assert all(flag in dataset.columns for flag in
+                       columns_use), "Use columns specific to the dataset given the columns provided are not found " \
+                                     + ' '.join([j for j in columns_use])
+            if set(columns_use).issubset(dataset.columns):
 
-        for column in dataset:
-            columns_Processing.append(dataset[column])
-            columnsOld.append(column)
+                for column in columns_use:
+                    columns_Processing.append(dataset[column])
+
+        else:
+            for column in dataset:
+                columns_Processing.append(dataset[column])
 
         func = partial(__one_hot_single__, column_prefix=column_prefix)
         d = pqdm(columns_Processing, func, n_jobs=n_coresJob, disable=disableLoadBar)
 
-        dfFinal = pd.concat([i for i in d], axis=1)
-
+        if columns_use is not None:
+            dfFinal = pd.concat([i for i in d], axis=1)
+            dfFinal = pd.concat([dfFinal, dataset[dataset.columns.difference(columns_use, sort=False)]],
+                                axis=1,
+                                sort=True)
+        else:
+            dfFinal = pd.concat([i for i in d], axis=1)
     return dfFinal

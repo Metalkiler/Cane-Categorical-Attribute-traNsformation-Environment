@@ -7,12 +7,9 @@ At the moment offers 3 preprocessing methods:
 --> The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to "perc" percent) into a single level as presented in (<https://doi.org/10.1109/IJCNN.2019.8851888>), which, for example, can be "Others" category. It can be useful when dealing with several amounts of categorical information (e.g., city data).
 
 An example of this can be viewed by the following pdf:
-<object data="https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/blob/master/cities.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/blob/master/cities.pdf">
-        <p><a href="https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/blob/master/cities.pdf">View PDF</a>.</p>
-    </embed>
-</object>
-
+ 
+<p><a href="https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment/blob/master/cities.pdf">View PDF</a>.</p>
+  
 
 Which the 1,000 highest frequency values (decreasing order) for the user city attribute for the TEST traffic data (which contains a total of 10,690 levels).
 For this attribute and when <img src="https://render.githubusercontent.com/render/math?math=P=10">, PCP selects only the most frequent 688 levels (dashed vertical line) merging the other 10,002 infrequent levels into the "Others" label.
@@ -22,6 +19,10 @@ This method results in 689 binary inputs, which is much less than the 10690 bina
 --> The Inverse Document Frequency (IDF) codifies the categorical levels into frequency values, where the closer to 0 means, the more frequent it is (<https://ieeexplore.ieee.org/document/8710472>).
 
 --> Finally it also has implemented a simpler standard One-Hot-Encoding method.
+
+
+It is possible to apply these transformations to specific columns only instead of the full dataset (follow the example).
+
 
 # Installation
 
@@ -47,18 +48,22 @@ import timeit
 x = [k for s in ([k] * n for k, n in [('a', 30000), ('b', 50000), ('c', 70000), ('d', 10000), ('e', 1000)]) for k in s]
 df = pd.DataFrame({f'x{i}' : x for i in range(1, 130)})
 
-dataPCP = cane.pcp(df)  # uses the PCP method and only 1 core with perc == 0.05
-dataPCP = cane.pcp(df, n_coresJob=2)  # uses the PCP method and only 2 cores
-dataPCP = cane.pcp(df, n_coresJob=2,disableLoadBar = False)  # With Progress Bar
+dataPCP = cane.pcp(df)  # uses the PCP method and only 1 core with perc == 0.05 for all columns
+dataPCP = cane.pcp(df, n_coresJob=2)  # uses the PCP method and only 2 cores for all columns
+dataPCP = cane.pcp(df, n_coresJob=2,disableLoadBar = False)  # With Progress Bar for all columns
+dataPCP = cane.pcp(df, n_coresJob=2,disableLoadBar = False, columns_use = ["x1","x2"])  # With Progress Bar and specific columns
+
 
 #dicionary with the transformed data
 
 dicionary = cane.dic_pcp(dataPCP)
 print(dicionary)
 
-dataIDF = cane.idf(df)  # uses the IDF method and only 1 core
-dataIDF = cane.idf(df, n_coresJob=2)  # uses the IDF method and only 2 core
-dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False)  # With Progress Bar
+dataIDF = cane.idf(df)  # uses the IDF method and only 1 core for all columns 
+dataIDF = cane.idf(df, n_coresJob=2)  # uses the IDF method and only 2 core for all columns
+dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False)  # With Progress Bar for all columns
+dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False, columns_use = ["x1","x2"]) # specific columns
+
 
 dataH = cane.one_hot(df)  # without a column prefixer
 dataH2 = cane.one_hot(df, column_prefix='column')  # it will use the original column name prefix
@@ -70,8 +75,10 @@ dataH4 = cane.one_hot(df, column_prefix='column', n_coresJob=2)  # it will use t
 # with 2 cores
 
 dataH4 = cane.one_hot(df, column_prefix='column', n_coresJob=2
-                      ,disableLoadBar = False)  # With Progress Bar Active!
-# with 2 cores
+                      ,disableLoadBar = False)  # With Progress Bar Active with 2 cores
+
+dataH4 = cane.one_hot(df, column_prefix='column', n_coresJob=2
+                      ,disableLoadBar = False,columns_use = ["x1","x2"])  # With Progress Bar specific columns!
 
 #Time Measurement in 10 runs
 print("Time Measurement in 10 runs (unicore)")
