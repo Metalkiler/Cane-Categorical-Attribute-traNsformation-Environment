@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: cane
-Version: 0.0.1.7.7b1
+Version: 0.0.1.7.7
 Summary: Cane - Categorical Attribute traNsformation Environment
 Home-page: https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment
 Author: Luís Miguel Matos, Paulo Cortez, Rui Mendes
@@ -31,7 +31,6 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         
         It is possible to apply these transformations to specific columns only instead of the full dataset (follow the example).
         
-        There is a new function called multicolumn (for PCP and IDF only). This function will aggregate 2 or more columns into a single one and apply the transformation to it. Afterwards it will map the transformation obtained into the disaggregated columns.
         
         # Installation
         

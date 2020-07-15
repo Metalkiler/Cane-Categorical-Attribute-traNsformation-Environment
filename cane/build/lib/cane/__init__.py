@@ -80,7 +80,8 @@ def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1,
         if columns_use is not None:
             dfFinal = pd.concat([i for i in d], axis=1)
             dfFinal.columns = columns_use
-            dfFinal = pd.concat([dfFinal, TransformedData[TransformedData.columns.difference(columns_use,sort=False)]], axis=1,
+            dfFinal = pd.concat([dfFinal, TransformedData[TransformedData.columns.difference(columns_use, sort=False)]],
+                                axis=1,
                                 sort=True)
         else:
             dfFinal = pd.concat([i for i in d], axis=1)
@@ -88,12 +89,98 @@ def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1,
         return dfFinal
 
 
+def pcp_multicolumn(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others",
+                    columns_use=None):
+    """
+    Similarly to the normal PCP this function uses X columns given merges and applies the pcp transformation to it.
+    Next it will apply the transformation into the disaggregated columns sharing the transformation obtained previously
+
+    :param columns_use: Specific columns to apply transformation.
+    :param mergeCategory: Category for merging the data (by default "Others")
+    :param dataset: dataset to transform
+    :param perc: threshold percentage of P
+    :return: the "Dataset" transformed
+
+
+
+    """
+
+    TransformedData = dataset.copy()
+
+    assert isinstance(TransformedData, pd.DataFrame), "Dataset needs to be of type Pandas"
+    assert 0 <= perc <= 1, "Percentage goes from 0 to 1, it may neither be negative nor above 1"
+    assert (columns_use is not None), "multicolumn PCP requires the usage of columns!"
+    assert (len(columns_use) > 1), "multicolumn PCP requires the usage of more than 1 column!"
+    if isinstance(TransformedData, pd.DataFrame) and perc <= 1 and columns_use is not None:
+
+        assert all(flag in TransformedData.columns for flag in
+                   columns_use), "Use columns specific to the dataset given the columns provided are not found " \
+                                 + ' '.join([j for j in columns_use])
+        if set(columns_use).issubset(TransformedData.columns):
+
+            mergedColumn = []
+            for column in columns_use:
+                mergedColumn.append(TransformedData[column].values)
+
+        dfTesting = pd.Series([y for x in mergedColumn for y in x], name="X")
+
+        d = __pcp_single__(dfTesting, perc_inner=perc, mergeCategoryinner=mergeCategory)
+        dic = {v: [i for i in np.unique(v)][0] for _, v in d.items()}
+        for column in columns_use:
+            TransformedData[column] = TransformedData[column].map(dic)
+            TransformedData[column] = TransformedData[column].fillna(mergeCategory)  # because of others
+        # dfFinal = pd.concat([i for i in d], axis=1)
+        # dfFinal.columns = columns_use
+        # dfFinal = pd.concat([dfFinal, TransformedData[TransformedData.columns.difference(columns_use, sort=False)]],
+        #                     axis=1,
+        #                     sort=True)
+
+    return TransformedData
+
+
+def idf_multicolumn(dataset, columns_use=None):
+    """
+    The Inverse Document Frequency (IDF) uses f(x)= log(n/f_x),
+    where n is the length of x and f_x is the frequency of x.
+    Next it will apply the transformation into the disaggregated columns sharing
+    the transformation obtained previously
+
+    :param columns_use: List of columns to use
+    :param dataset: dataset to transform
+
+    :return: Dataset with the IDF transformation
+    """
+
+    TransformedData = dataset.copy()
+
+    assert isinstance(TransformedData, pd.DataFrame), "Dataset needs to be of type Pandas"
+    assert (columns_use is not None), "multicolumn idf requires the usage of columns!"
+    assert (len(columns_use) > 1), "multicolumn idf requires the usage of more than 1 column!"
+    if isinstance(TransformedData, pd.DataFrame) and columns_use is not None:
+
+        assert all(flag in TransformedData.columns for flag in
+                   columns_use), "Use columns specific to the dataset given the columns provided are not found " \
+                                 + ' '.join([j for j in columns_use])
+        if set(columns_use).issubset(TransformedData.columns):
+
+            mergedColumn = []
+            for column in columns_use:
+                mergedColumn.append(TransformedData[column].values)
+
+        dfTesting = pd.Series([y for x in mergedColumn for y in x], name="X")
+
+        d = __idf_single_dic__(dfTesting)
+        for column in columns_use:
+            TransformedData[column] = TransformedData[column].replace(d)
+    return TransformedData
+
+
 def dic_pcp(dataset):
     """
     :param dataset: Dataset Transformed with the PCP
     :return: Dictionary with the constitution of the PCP dataset for each column value
     """
-    assert isinstance(dataset, pd.DataFrame), "Dataset needs to be of type Pandas"
+    assert isinstance(dataset, pd.DataFrame) or isinstance(dataset, pd.Series), "Dataset needs to be of type Pandas"
     return {k: {i: i for i in np.unique(v)} for k, v in dataset.items()}
 
 
@@ -107,6 +194,15 @@ def __idf_single__(f):
 
     resTreated = res.replace(idf)
     return resTreated
+
+
+def __idf_single_dic__(f):
+    x = f.value_counts(sort=False)
+    N = len(f)
+    idf = {}
+    for i in range(0, len(x)):
+        idf[x.index[i]] = math.log(N / x.values[i])
+    return idf
 
 
 def idf(dataset, n_coresJob=1, disableLoadBar=True, columns_use=None):
