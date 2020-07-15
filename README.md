@@ -36,7 +36,14 @@ pip install cane
 ```
 ## Beta Version
 
-Which in this version there is a new function called multicolumn (for PCP and IDF only). This function will aggregate 2 or more columns into a single one and apply the transformation to it. Afterwards it will map the transformation obtained into the disaggregated columns.
+Which in this version will contain pre-release versions of Cane that have new function which the stable version has not, and allow the users for their feedback and usage.
+
+BETA Version
+
+[x] - New function called multicolumn (for PCP and IDF only). This function will aggregate 2 or more columns into a single one and apply the transformation to it. Afterwards it will map the transformation obtained into the disaggregated columns.
+
+More to come!
+
 
 
 ``` cmd
