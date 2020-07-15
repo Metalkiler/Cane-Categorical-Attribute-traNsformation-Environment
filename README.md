@@ -47,7 +47,7 @@ More to come!
 
 
 ``` cmd
-pip install cane==0.0.1.7.7b0
+pip install cane==0.0.1.7.7b1
 
 
 ```

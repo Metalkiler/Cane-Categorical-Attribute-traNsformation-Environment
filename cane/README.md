@@ -23,7 +23,6 @@ This method results in 689 binary inputs, which is much less than the 10690 bina
 
 It is possible to apply these transformations to specific columns only instead of the full dataset (follow the example).
 
-There is a new function called multicolumn (for PCP and IDF only). This function will aggregate 2 or more columns into a single one and apply the transformation to it. Afterwards it will map the transformation obtained into the disaggregated columns.
 
 # Installation
 

@@ -84,7 +84,7 @@ def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1,
                                 sort=True)
         else:
             dfFinal = pd.concat([i for i in d], axis=1)
-
+            dfFinal.columns = TransformedData.columns
         return dfFinal
 
 
