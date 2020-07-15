@@ -102,6 +102,33 @@ dataH4 = cane.one_hot(df, column_prefix='column', n_coresJob=2
 dataH4 = cane.one_hot(df, column_prefix='column', n_coresJob=2
                       ,disableLoadBar = False,columns_use = ["x1","x2"])  # With Progress Bar specific columns!
 
+
+
+#specific example with multicolumn BETA ONLY!
+x2 = [k for s in ([k] * n for k, n in [('a', 50),
+                                       ('b', 10),
+                                       ('c', 20),
+                                       ('d', 15), 
+                                       ('e', 5)]) for k in s]
+
+x3 = [k for s in ([k] * n for k, n in [('a', 40),
+                                       ('b', 20),
+                                       ('c', 1),
+                                       ('d', 1), 
+                                       ('e', 38)]) for k in s]
+df2 = pd.concat([pd.DataFrame({f'x{i}' : x2 for i in range(1, 3)}),pd.DataFrame({f'y{i}' : x3 for i in range(1, 3)})], axis=1)
+dataPCP = cane.pcp(df2, n_coresJob=2,disableLoadBar = False)
+print("normal PCP \n",dataPCP)
+dataPCP2 = cane.pcp_multicolumn(df2, columns_use = ["x1","y1"])  # aplication of specific multicolumn setting PCP
+print("multicolumn PCP \n",dataPCP2)
+
+dataIDF = cane.idf(df2, n_coresJob=2,disableLoadBar = False, columns_use = ["x1","y1"]) # specific columns
+print("normal idf \n",dataIDF)
+dataIDF2 = cane.idf_multicolumn(df2, columns_use = ["x1","y1"])  # aplication of specific multicolumn setting IDF
+print("multicolumn idf \n",dataIDF2)
+
+
+
 #Time Measurement in 10 runs
 print("Time Measurement in 10 runs (unicore)")
 OT = timeit.timeit(lambda:cane.one_hot(df, column_prefix='column', n_coresJob=1),number = 10)
