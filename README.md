@@ -26,12 +26,25 @@ It is possible to apply these transformations to specific columns only instead o
 
 # Installation
 
+## Stable Version
 To install this package please run the following command
 
 ``` cmd
 pip install cane
 
+
 ```
+## Beta Version
+
+Which in this version there is a new function called multicolumn (for PCP and IDF only). This function will aggregate 2 or more columns into a single one and apply the transformation to it. Afterwards it will map the transformation obtained into the disaggregated columns.
+
+
+``` cmd
+pip install cane==0.0.1.7.7b0
+
+
+```
+
 
 # Suggestions and feedback
 
@@ -54,6 +67,7 @@ dataPCP = cane.pcp(df, n_coresJob=2,disableLoadBar = False)  # With Progress Bar
 dataPCP = cane.pcp(df, n_coresJob=2,disableLoadBar = False, columns_use = ["x1","x2"])  # With Progress Bar and specific columns
 
 
+
 #dicionary with the transformed data
 
 dicionary = cane.dic_pcp(dataPCP)
@@ -63,6 +77,7 @@ dataIDF = cane.idf(df)  # uses the IDF method and only 1 core for all columns
 dataIDF = cane.idf(df, n_coresJob=2)  # uses the IDF method and only 2 core for all columns
 dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False)  # With Progress Bar for all columns
 dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False, columns_use = ["x1","x2"]) # specific columns
+dataIDF = cane.idf_multicolumn(df, columns_use = ["x1","x2"])  # aplication of specific multicolumn setting IDF
 
 
 dataH = cane.one_hot(df)  # without a column prefixer
@@ -79,6 +94,37 @@ dataH4 = cane.one_hot(df, column_prefix='column', n_coresJob=2
 
 dataH4 = cane.one_hot(df, column_prefix='column', n_coresJob=2
                       ,disableLoadBar = False,columns_use = ["x1","x2"])  # With Progress Bar specific columns!
+
+
+
+
+#specific example with multicolumn BETA ONLY!
+x2 = [k for s in ([k] * n for k, n in [('a', 50),
+                                       ('b', 10),
+                                       ('c', 20),
+                                       ('d', 15), 
+                                       ('e', 5)]) for k in s]
+
+x3 = [k for s in ([k] * n for k, n in [('a', 40),
+                                       ('b', 20),
+                                       ('c', 1),
+                                       ('d', 1), 
+                                       ('e', 38)]) for k in s]
+df2 = pd.concat([pd.DataFrame({f'x{i}' : x2 for i in range(1, 3)}),pd.DataFrame({f'y{i}' : x3 for i in range(1, 3)})], axis=1)
+dataPCP = cane.pcp(df2, n_coresJob=2,disableLoadBar = False)
+print("normal PCP \n",dataPCP)
+dataPCP2 = cane.pcp_multicolumn(df2, columns_use = ["x1","y1"])  # aplication of specific multicolumn setting PCP
+print("multicolumn PCP \n",dataPCP2)
+
+dataIDF = cane.idf(df2, n_coresJob=2,disableLoadBar = False, columns_use = ["x1","y1"]) # specific columns
+print("normal idf \n",dataIDF)
+dataIDF2 = cane.idf_multicolumn(df2, columns_use = ["x1","y1"])  # aplication of specific multicolumn setting IDF
+print("multicolumn idf \n",dataIDF2)
+
+
+
+
+
 
 #Time Measurement in 10 runs
 print("Time Measurement in 10 runs (unicore)")
