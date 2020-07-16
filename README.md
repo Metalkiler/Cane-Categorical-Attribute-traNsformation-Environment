@@ -23,6 +23,12 @@ This method results in 689 binary inputs, which is much less than the 10690 bina
 
 It is possible to apply these transformations to specific columns only instead of the full dataset (follow the example).
 
+New Feature :
+
+
+[x] - New function called multicolumn (for PCP and IDF only). This function will aggregate 2 or more columns into a single one and apply the transformation to it. Afterwards it will map the transformation obtained into the disaggregated columns.
+
+
 
 # Installation
 
@@ -34,24 +40,6 @@ pip install cane
 
 
 ```
-## Beta Version
-
-Which in this version will contain pre-release versions of Cane that have new function which the stable version has not, and allow the users for their feedback and usage.
-
-BETA Version
-
-[x] - New function called multicolumn (for PCP and IDF only). This function will aggregate 2 or more columns into a single one and apply the transformation to it. Afterwards it will map the transformation obtained into the disaggregated columns.
-
-More to come!
-
-
-
-``` cmd
-pip install cane==0.0.1.7.7b1
-
-
-```
-
 
 # Suggestions and feedback
 
@@ -104,7 +92,7 @@ dataH4 = cane.one_hot(df, column_prefix='column', n_coresJob=2
 
 
 
-#specific example with multicolumn BETA ONLY!
+#specific example with multicolumn
 x2 = [k for s in ([k] * n for k, n in [('a', 50),
                                        ('b', 10),
                                        ('c', 20),

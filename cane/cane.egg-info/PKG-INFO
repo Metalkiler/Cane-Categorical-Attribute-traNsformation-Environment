@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: cane
-Version: 0.0.1.7.7
+Version: 2.0.1
 Summary: Cane - Categorical Attribute traNsformation Environment
 Home-page: https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment
 Author: Luís Miguel Matos, Paulo Cortez, Rui Mendes
@@ -31,13 +31,21 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         
         It is possible to apply these transformations to specific columns only instead of the full dataset (follow the example).
         
+        New Feature :
+        
+        
+        [x] - New function called multicolumn (for PCP and IDF only). This function will aggregate 2 or more columns into a single one and apply the transformation to it. Afterwards it will map the transformation obtained into the disaggregated columns.
+        
+        
         
         # Installation
         
+        ## Stable Version
         To install this package please run the following command
         
         ``` cmd
         pip install cane
+        
         
         ```
         
@@ -92,8 +100,7 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         
         
         
-        
-        #specific example with multicolumn 
+        #specific example with multicolumn
         x2 = [k for s in ([k] * n for k, n in [('a', 50),
                                                ('b', 10),
                                                ('c', 20),
@@ -115,9 +122,6 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         print("normal idf \n",dataIDF)
         dataIDF2 = cane.idf_multicolumn(df2, columns_use = ["x1","y1"])  # aplication of specific multicolumn setting IDF
         print("multicolumn idf \n",dataIDF2)
-        
-        
-        
         
         
         

@@ -19,6 +19,7 @@ import pandas as pd
 from pqdm.processes import pqdm
 from functools import partial
 import itertools
+from tqdm import tqdm
 
 
 def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
@@ -90,11 +91,12 @@ def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1,
 
 
 def pcp_multicolumn(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others",
-                    columns_use=None):
+                    columns_use=None, disableLoadBar=True):
     """
     Similarly to the normal PCP this function uses X columns given merges and applies the pcp transformation to it.
     Next it will apply the transformation into the disaggregated columns sharing the transformation obtained previously
 
+    :param disableLoadBar: Chooses if you want load bar or not (default = True)
     :param columns_use: Specific columns to apply transformation.
     :param mergeCategory: Category for merging the data (by default "Others")
     :param dataset: dataset to transform
@@ -126,25 +128,21 @@ def pcp_multicolumn(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others",
 
         d = __pcp_single__(dfTesting, perc_inner=perc, mergeCategoryinner=mergeCategory)
         dic = {v: [i for i in np.unique(v)][0] for _, v in d.items()}
-        for column in columns_use:
+        for column in tqdm(columns_use, desc="Transformation", total=len(columns_use), disable=disableLoadBar):
             TransformedData[column] = TransformedData[column].map(dic)
             TransformedData[column] = TransformedData[column].fillna(mergeCategory)  # because of others
-        # dfFinal = pd.concat([i for i in d], axis=1)
-        # dfFinal.columns = columns_use
-        # dfFinal = pd.concat([dfFinal, TransformedData[TransformedData.columns.difference(columns_use, sort=False)]],
-        #                     axis=1,
-        #                     sort=True)
 
     return TransformedData
 
 
-def idf_multicolumn(dataset, columns_use=None):
+def idf_multicolumn(dataset, columns_use=None, disableLoadBar=True):
     """
     The Inverse Document Frequency (IDF) uses f(x)= log(n/f_x),
     where n is the length of x and f_x is the frequency of x.
     Next it will apply the transformation into the disaggregated columns sharing
     the transformation obtained previously
 
+    :param disableLoadBar: Chooses if you want load bar or not (default = True)
     :param columns_use: List of columns to use
     :param dataset: dataset to transform
 
@@ -170,7 +168,7 @@ def idf_multicolumn(dataset, columns_use=None):
         dfTesting = pd.Series([y for x in mergedColumn for y in x], name="X")
 
         d = __idf_single_dic__(dfTesting)
-        for column in columns_use:
+        for column in tqdm(columns_use, desc="Transformation", total=len(columns_use), disable=disableLoadBar):
             TransformedData[column] = TransformedData[column].replace(d)
     return TransformedData
 
