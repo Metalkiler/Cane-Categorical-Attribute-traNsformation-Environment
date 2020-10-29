@@ -40,6 +40,8 @@ pip install cane
 
 
 ```
+# New
+Version 2.0.2 - This version has the requirements updated
 
 # Suggestions and feedback
 
