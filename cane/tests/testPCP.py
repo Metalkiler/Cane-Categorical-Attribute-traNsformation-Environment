@@ -127,7 +127,11 @@ class TestPCP(unittest.TestCase):
         numpy.testing.assert_array_equal(expected, filtered)
 
     def test_PCP_multicolumn(self):
-      
+        """
+            Um teste onde há 26 valores diferentes, o primeiro aparece uma vez, o segundo duas vezes, etc
+            As letras são permutadas aleatóriamente para evitar qualquer bias
+            A seguir, os dados são permutados aleatóriamente para que a série não tenha os valores seguidos
+        """
         df = TestPCP.create_df()
         expected = TestPCP.create_df_expected()
         filtered = pcp_multicolumn(df, mergeCategory="Others", columns_use=["x1", "y1"])
