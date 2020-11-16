@@ -21,6 +21,9 @@ This method results in 689 binary inputs, which is much less than the 10690 bina
 
 --> Implementation of a simpler One-Hot-Encoding method.
 
+
+
+# Alpha-Release
 --> Minmax and Standard scaler (based on sklearn functions) with column selection and multicore support
 
 It is possible to apply these transformations to specific columns only instead of the full dataset (follow the example).
@@ -46,9 +49,15 @@ To install this package please run the following command
 
 ``` cmd
 pip install cane
-
-
 ```
+
+## Alpha Version
+To install this package please run the following command
+
+``` cmd
+pip install cane==2.0.3a3
+```
+
 # New
 Version 2.0.2 - This version has the requirements updated
 
@@ -147,22 +156,40 @@ print("One-Hot Time Multicore:",OTM)
 print("IDF Time Multicore:",ITM)
 print("PCP Time Multicore:",PTM)
 
+
+
+```
+
+# Alpha Release Example
+``` python
 #New Scaler Function 
 
+
+
+dfNumbers = pd.DataFrame(np.random.randint(0,100000,size=(100000, 12)), columns=list('ABCDEFGHIJKL'))
+cane.scale_data(dfNumbers, n_cores = 3, scaleFunc="min_max")
+cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="min_max")
+
+
+
+#####################Custom Function Example#######################
+
+#This will be an example file you of your custom function (e.g., "functions.py")
+import pandas as pd
+import numpy as np
+import cane 
 
 def customFunc(val):
        return pd.DataFrame([round((i - 1) / 3, 2) for i in val],columns=[val.name + "_custom_scalled_min_max"])
 
+
+
+### This is will be your main script
+
+from functions import *
 # with a custom function to apply to data:
 if __name__ == "__main__":
-    def customFunc(val):
-        return pd.DataFrame([round((i - 1) / 3, 2) for i in val],
-                            columns=[val.name + "_custom_scalled_min_max"])
-
-    
     dfNumbers = pd.DataFrame(np.random.randint(0,100000,size=(100000, 12)), columns=list('ABCDEFGHIJKL'))
-    cane.scale_data(dfNumbers, n_cores = 3, scaleFunc="min_max")
-    cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="min_max")
     cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="custom", customfunc = customFunc)
     
 

@@ -318,16 +318,19 @@ def scale_data(df, column=[], n_cores=1, scaleFunc="", customfunc=None):
                                                                                                        "'custom' "
 
     if scaleFunc == 'custom':
-        assert(callable(customfunc)), "Please provide a function for the custom function you want to use"
+        assert (callable(customfunc)), "Please provide a function for the custom function you want to use"
 
     valArgs = []
     if len(column) == 0:
         columns = df.columns.values
+        diff = columns
         for i in columns:
             valArgs.append(df[i])
     else:
+        columns = df.columns.values
         for i in column:
             valArgs.append(df[i])
+        diff = list(set(columns) - set(column))
     if scaleFunc == "min_max":
         func = partial(scale_single_min_max)
     elif scaleFunc == "std":
@@ -338,7 +341,6 @@ def scale_data(df, column=[], n_cores=1, scaleFunc="", customfunc=None):
 
     dfFinal = pd.concat([i for i in d], axis=1)
 
-    diff = list(set(columns) - set(column))
     Concated = pd.concat([df[diff], dfFinal[dfFinal.columns.values]], axis=1, sort=True)
 
     return Concated
@@ -356,3 +358,7 @@ def scale_single_std(val):
     stds = np.std(val)
     return pd.DataFrame([round((i - means) / stds, 2) for i in val],
                         columns=[val.name + "_scalled_std"])
+
+
+def __version__():
+    print("2.0.3a3")
