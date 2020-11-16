@@ -11,14 +11,13 @@
 #     https://ieeexplore.ieee.org/document/8710472
 #     http://hdl.handle.net/1822/61586
 
+import itertools
 import math
+from functools import partial
 from math import ceil
-
 import numpy as np
 import pandas as pd
 from pqdm.processes import pqdm
-from functools import partial
-import itertools
 from tqdm import tqdm
 
 
@@ -307,3 +306,53 @@ def one_hot(dataset, column_prefix=None, n_coresJob=1, disableLoadBar=True, colu
         else:
             dfFinal = pd.concat([i for i in d], axis=1)
     return dfFinal
+
+
+def scale_data(df, column=[], n_cores=1, scaleFunc="", customfunc=None):
+    assert isinstance(df, pd.DataFrame), "Dataset needs to be of type Pandas"
+    assert (scaleFunc != "" or scaleFunc == "min_max" or scaleFunc == "std" or scaleFunc == "custom"), "Specify a " \
+                                                                                                       "scaler (" \
+                                                                                                       "e.g., " \
+                                                                                                       "'min_max' or " \
+                                                                                                       "'std') or " \
+                                                                                                       "'custom' "
+
+    if scaleFunc == 'custom':
+        assert(callable(customfunc)), "Please provide a function for the custom function you want to use"
+
+    valArgs = []
+    if len(column) == 0:
+        columns = df.columns.values
+        for i in columns:
+            valArgs.append(df[i])
+    else:
+        for i in column:
+            valArgs.append(df[i])
+    if scaleFunc == "min_max":
+        func = partial(scale_single_min_max)
+    elif scaleFunc == "std":
+        func = partial(scale_single_std)
+    else:
+        func = partial(customfunc)
+    d = pqdm(valArgs, func, n_jobs=n_cores)
+
+    dfFinal = pd.concat([i for i in d], axis=1)
+
+    diff = list(set(columns) - set(column))
+    Concated = pd.concat([df[diff], dfFinal[dfFinal.columns.values]], axis=1, sort=True)
+
+    return Concated
+
+
+def scale_single_min_max(val):
+    minimum = min(val)
+    maximum = max(val)
+    return pd.DataFrame([round((i - minimum) / (maximum - minimum), 2) for i in val],
+                        columns=[val.name + "_scalled_min_max"])
+
+
+def scale_single_std(val):
+    means = np.mean(val)
+    stds = np.std(val)
+    return pd.DataFrame([round((i - means) / stds, 2) for i in val],
+                        columns=[val.name + "_scalled_std"])
