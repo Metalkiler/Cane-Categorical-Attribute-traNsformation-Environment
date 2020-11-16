@@ -1,9 +1,9 @@
-# Cane - Categorical Attribute traNsformation Environment 
+# Cane - Categorical Attribute traNsformation Environment
 [![Downloads](https://pepy.tech/badge/cane)](https://pepy.tech/project/cane) [![Downloads](https://pepy.tech/badge/cane/month)](https://pepy.tech/project/cane) [![Downloads](https://pepy.tech/badge/cane/week)](https://pepy.tech/project/cane)
 
 CANE is a simpler but powerful preprocessing method for machine learning.
 
-At the moment offers 3 preprocessing methods:
+At the moment offers some preprocessing methods:
 
 --> The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to "perc" percent) into a single level as presented in (<https://doi.org/10.1109/IJCNN.2019.8851888>), which, for example, can be "Others" category. It can be useful when dealing with several amounts of categorical information (e.g., city data).
 
@@ -19,15 +19,23 @@ This method results in 689 binary inputs, which is much less than the 10690 bina
 
 --> The Inverse Document Frequency (IDF) codifies the categorical levels into frequency values, where the closer to 0 means, the more frequent it is (<https://ieeexplore.ieee.org/document/8710472>).
 
---> Finally it also has implemented a simpler standard One-Hot-Encoding method.
+--> Implementation of a simpler One-Hot-Encoding method.
 
+--> Minmax and Standard scaler (based on sklearn functions) with column selection and multicore support
 
 It is possible to apply these transformations to specific columns only instead of the full dataset (follow the example).
 
 New Feature :
 
+[x] - Introduced a scaler function implementation based from skelearn package but allowing to choose each columns you want to use and multiprocessing function. Also you can provide a custom function of your own! (check Example)
 
-[x] - New function called multicolumn (for PCP and IDF only). This function will aggregate 2 or more columns into a single one and apply the transformation to it. Afterwards it will map the transformation obtained into the disaggregated columns.
+
+
+
+Future Function:
+
+[Future] - MultiColumn scale (based on the implementation of IDF and PCP)
+ 
 
 
 
@@ -56,6 +64,7 @@ For questions and other suggestions contact luis.matos@dsi.uminho.pt
 import pandas as pd
 import cane
 import timeit
+import numpy as np
 x = [k for s in ([k] * n for k, n in [('a', 30000), ('b', 50000), ('c', 70000), ('d', 10000), ('e', 1000)]) for k in s]
 df = pd.DataFrame({f'x{i}' : x for i in range(1, 130)})
 
@@ -138,6 +147,24 @@ print("One-Hot Time Multicore:",OTM)
 print("IDF Time Multicore:",ITM)
 print("PCP Time Multicore:",PTM)
 
+#New Scaler Function 
+
+
+def customFunc(val):
+       return pd.DataFrame([round((i - 1) / 3, 2) for i in val],columns=[val.name + "_custom_scalled_min_max"])
+
+# with a custom function to apply to data:
+if __name__ == "__main__":
+    def customFunc(val):
+        return pd.DataFrame([round((i - 1) / 3, 2) for i in val],
+                            columns=[val.name + "_custom_scalled_min_max"])
+
+    
+    dfNumbers = pd.DataFrame(np.random.randint(0,100000,size=(100000, 12)), columns=list('ABCDEFGHIJKL'))
+    cane.scale_data(dfNumbers, n_cores = 3, scaleFunc="min_max")
+    cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="min_max")
+    cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="custom", customfunc = customFunc)
+    
 
 ```
 
