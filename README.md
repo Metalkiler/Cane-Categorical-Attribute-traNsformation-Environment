@@ -55,7 +55,7 @@ pip install cane
 To install this package please run the following command
 
 ``` cmd
-pip install cane==2.0.3a3
+pip install cane==2.0.3b1
 ```
 
 # New
