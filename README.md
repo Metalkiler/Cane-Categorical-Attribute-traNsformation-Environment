@@ -1,5 +1,4 @@
-# Cane - Categorical Attribute traNsformation Environment
-[![Downloads](https://pepy.tech/badge/cane)](https://pepy.tech/project/cane)
+# Cane - Categorical Attribute traNsformation Environment [![Downloads](https://pepy.tech/badge/cane)](https://pepy.tech/project/cane)
 CANE is a simpler but powerful preprocessing method for machine learning.
 
 At the moment offers 3 preprocessing methods:
