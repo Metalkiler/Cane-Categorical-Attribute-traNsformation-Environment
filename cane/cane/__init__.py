@@ -334,7 +334,7 @@ def scale_data(df, column=[], n_cores=1, scaleFunc="", customfunc=None):
         columns = df.columns.values
         for i in column:
             valArgs.append(df[i])
-        diff = list(set(columns) - set(column))
+        diff = columns
     if scaleFunc == "min_max":
         func = partial(scale_single_min_max)
     elif scaleFunc == "std":
@@ -365,4 +365,4 @@ def scale_single_std(val):
 
 
 def __version__():
-    print("2.0.3b1")
+    print("2.0.3")

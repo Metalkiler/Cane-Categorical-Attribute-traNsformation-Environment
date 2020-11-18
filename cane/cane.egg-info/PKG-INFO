@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: cane
-Version: 2.0.3a3
+Version: 2.0.3.1
 Summary: Cane - Categorical Attribute traNsformation Environment
 Home-page: https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment
 Author: Luís Miguel Matos, Paulo Cortez, Rui Mendes
@@ -29,42 +29,45 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         
         --> Implementation of a simpler One-Hot-Encoding method.
         
-        --> Minmax and Standard scaler (based on sklearn functions) with column selection and multicore support
+        --> Minmax and Standard scaler (based on sklearn functions) with column selection and multicore support. Also, it is possible to apply these transformations to specific columns only instead of the full dataset (follow the example). However it only works with numerical data (e.g., MSE, decision scores)
         
-        It is possible to apply these transformations to specific columns only instead of the full dataset (follow the example).
-        
-        New Feature :
-        
-        [x] - Introduced a scaler function implementation based from skelearn package but allowing to choose each columns you want to use and multiprocessing function. Also you can provide a custom function of your own! (check Example)
+        --> You can also provide a custom scaler version of your own! (check example)
         
         
         
         
-        Future Function:
+        Future Function ideas:
+        -- 
+        MultiColumn scale (based on the implementation of IDF and PCP)
+        Scaling of IDF values (normalized IDF) 
         
-        [Future] - MultiColumn scale (based on the implementation of IDF and PCP)
-         
         
         
         
         # Installation
         
-        ## Stable Version
         To install this package please run the following command
         
         ``` cmd
         pip install cane
-        
-        
         ```
+        
         # New
-        Version 2.0.2 - This version has the requirements updated
+        Version 2.0.3:
+        
+        [x] - Introduced a scaler function implementation based from skelearn package but allowing to choose each columns you want to use and multiprocessing function. 
+        
+        [x] - Also you can provide a custom function of your own! (check Example)
+        
+        
         
         # Suggestions and feedback
         
         Any feedback will be appreciated.
         For questions and other suggestions contact luis.matos@dsi.uminho.pt
+        Found any bugs? Post Them on the github page of the project! (https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment)
         
+        Thanks for the support!
         
         # Example
         
@@ -155,13 +158,23 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         print("IDF Time Multicore:",ITM)
         print("PCP Time Multicore:",PTM)
         
+        
+        
+        ```
+        
+        # Scaler Example with cane
+        
+        These examples present the usage of cane with the standard methods (standard scaler e min max scaler).
+        Also, it is presented how to implement a custom scaler function of your own with cane!
+        ``` python
         #New Scaler Function 
         
         
         
         dfNumbers = pd.DataFrame(np.random.randint(0,100000,size=(100000, 12)), columns=list('ABCDEFGHIJKL'))
-        cane.scale_data(dfNumbers, n_cores = 3, scaleFunc="min_max")
-        cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="min_max")
+        cane.scale_data(dfNumbers, n_cores = 3, scaleFunc="min_max") # all columns using 3 cores
+        cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="min_max") # scale specific columns
+        cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="std") #standard Scaler
         
         
         
@@ -173,7 +186,7 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         import cane 
         
         def customFunc(val):
-               return pd.DataFrame([round((i - 1) / 3, 2) for i in val],columns=[val.name + "_custom_scalled_min_max"])
+               return pd.DataFrame([round((i - 1) / 3, 2) for i in val],columns=[val.name + "_custom_scalled_function])
         
         
         
@@ -182,6 +195,7 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         from functions import *
         # with a custom function to apply to data:
         if __name__ == "__main__":
+            dfNumbers = pd.DataFrame(np.random.randint(0,100000,size=(100000, 12)), columns=list('ABCDEFGHIJKL'))
             cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="custom", customfunc = customFunc)
             
         

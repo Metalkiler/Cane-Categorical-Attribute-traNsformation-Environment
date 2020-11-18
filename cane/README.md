@@ -21,51 +21,45 @@ This method results in 689 binary inputs, which is much less than the 10690 bina
 
 --> Implementation of a simpler One-Hot-Encoding method.
 
+--> Minmax and Standard scaler (based on sklearn functions) with column selection and multicore support. Also, it is possible to apply these transformations to specific columns only instead of the full dataset (follow the example). However it only works with numerical data (e.g., MSE, decision scores)
 
-
-# Alpha-Release
---> Minmax and Standard scaler (based on sklearn functions) with column selection and multicore support
-
-It is possible to apply these transformations to specific columns only instead of the full dataset (follow the example).
-
-New Feature :
-
-[x] - Introduced a scaler function implementation based from skelearn package but allowing to choose each columns you want to use and multiprocessing function. Also you can provide a custom function of your own! (check Example)
+--> You can also provide a custom scaler version of your own! (check example)
 
 
 
 
-Future Function:
+Future Function ideas:
+-- 
+MultiColumn scale (based on the implementation of IDF and PCP)
+Scaling of IDF values (normalized IDF) 
 
-[Future] - MultiColumn scale (based on the implementation of IDF and PCP)
- 
 
 
 
 # Installation
 
-## Stable Version
 To install this package please run the following command
 
 ``` cmd
 pip install cane
 ```
 
-## Alpha Version
-To install this package please run the following command
-
-``` cmd
-pip install cane==2.0.3b1
-```
-
 # New
-Version 2.0.2 - This version has the requirements updated
+Version 2.0.3:
+
+[x] - Introduced a scaler function implementation based from skelearn package but allowing to choose each columns you want to use and multiprocessing function. 
+
+[x] - Also you can provide a custom function of your own! (check Example)
+
+
 
 # Suggestions and feedback
 
 Any feedback will be appreciated.
 For questions and other suggestions contact luis.matos@dsi.uminho.pt
+Found any bugs? Post Them on the github page of the project! (https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment)
 
+Thanks for the support!
 
 # Example
 
@@ -160,15 +154,19 @@ print("PCP Time Multicore:",PTM)
 
 ```
 
-# Alpha Release Example
+# Scaler Example with cane
+
+These examples present the usage of cane with the standard methods (standard scaler e min max scaler).
+Also, it is presented how to implement a custom scaler function of your own with cane!
 ``` python
 #New Scaler Function 
 
 
 
 dfNumbers = pd.DataFrame(np.random.randint(0,100000,size=(100000, 12)), columns=list('ABCDEFGHIJKL'))
-cane.scale_data(dfNumbers, n_cores = 3, scaleFunc="min_max")
-cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="min_max")
+cane.scale_data(dfNumbers, n_cores = 3, scaleFunc="min_max") # all columns using 3 cores
+cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="min_max") # scale specific columns
+cane.scale_data(dfNumbers, column=["A","B"], n_cores = 3, scaleFunc="std") #standard Scaler
 
 
 
@@ -180,7 +178,7 @@ import numpy as np
 import cane 
 
 def customFunc(val):
-       return pd.DataFrame([round((i - 1) / 3, 2) for i in val],columns=[val.name + "_custom_scalled_min_max"])
+       return pd.DataFrame([round((i - 1) / 3, 2) for i in val],columns=[val.name + "_custom_scalled_function])
 
 
 

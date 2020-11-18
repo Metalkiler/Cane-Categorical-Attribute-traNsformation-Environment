@@ -320,6 +320,10 @@ def scale_data(df, column=[], n_cores=1, scaleFunc="", customfunc=None):
     if scaleFunc == 'custom':
         assert (callable(customfunc)), "Please provide a function for the custom function you want to use"
 
+    if column is not None:
+        assert all(flag in df.columns for flag in
+                   column), "Use columns specific to the dataset given the columns provided are not found " \
+                            + ' '.join([j for j in column])
     valArgs = []
     if len(column) == 0:
         columns = df.columns.values
@@ -330,7 +334,7 @@ def scale_data(df, column=[], n_cores=1, scaleFunc="", customfunc=None):
         columns = df.columns.values
         for i in column:
             valArgs.append(df[i])
-        diff = list(set(columns) - set(column))
+        diff = columns
     if scaleFunc == "min_max":
         func = partial(scale_single_min_max)
     elif scaleFunc == "std":
@@ -361,4 +365,4 @@ def scale_single_std(val):
 
 
 def __version__():
-    print("2.0.3a3")
+    print("2.0.3")

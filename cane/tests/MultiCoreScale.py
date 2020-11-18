@@ -7,7 +7,8 @@ import unittest
 
 from cane import scale_data, scale_single_min_max, scale_single_std
 
-class TestPCP(unittest.TestCase):
+
+class Testscalers(unittest.TestCase):
 
     @staticmethod
     def create_series():
@@ -36,7 +37,6 @@ class TestPCP(unittest.TestCase):
                               columns=["A_scalled_std"])
         return xA_new
 
-
     @staticmethod
     def create_expected_min_max():
         """
@@ -56,6 +56,7 @@ class TestPCP(unittest.TestCase):
         xA_new = pd.DataFrame([0.0, 0.5, 0.5, 0.5, 0.0, 0.0, 0.0, 0.5, 1.0, 0.5],
                               columns=["A_scalled_min_max"])
         return xA_new
+
     def teststd(self):
         df = self.create_series()
         a = scale_single_std(df["A"])
