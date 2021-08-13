@@ -88,7 +88,7 @@ dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False)  # With Progress Bar
 dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False, columns_use = ["x1","x2"]) # specific columns
 dataIDF = cane.idf_multicolumn(df, columns_use = ["x1","x2"])  # aplication of specific multicolumn setting IDF
 
-idfDicionary = cane.idfDictionary(trOriginal = df, trainIDFTransformed = dataIDF, columns_use = ["x1","x2"]
+idfDicionary = cane.idfDictionary(Original = df, Transformed = dataIDF, columns_use = ["x1","x2"]
                                 , targetColumn=None) #following the example above of the 2 columns
                                 
                                 
