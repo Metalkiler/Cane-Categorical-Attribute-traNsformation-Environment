@@ -10,8 +10,9 @@ if __name__ == "__main__":
     df = pd.DataFrame({f'x{i}': x for i in range(1, 130)})
     df2 = pd.DataFrame({f'x{i}': x2 for i in range(1, 130)})
 
-    params = {"n_coresJob":3, "columns_use":["x1","x2","x4"]}
     ##idf
-    datatransformed = idf(df)
-    datatransformed = idf(df, n_coresJob = 3) #using cane multiple core
-    dicionaryIDF = idfDicionary(df, datatransformed, datatransformed.columns) #geração de dicionário
+    datatransformed = cane.idf(df)
+    dicionaryIDF = cane.idfDicionary(df, datatransformed, datatransformed.columns) #geração de dicionário
+
+    datatransformed = cane.pcp(df)
+    dicionaryPCP = cane.PCPDicionary(df, datatransformed, datatransformed.columns)  # geração de dicionário

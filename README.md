@@ -45,11 +45,9 @@ pip install cane
 ```
 
 # New
-Version 2.0.3:
+Version 2.0.4:
 
-[x] - Introduced a scaler function implementation based from skelearn package but allowing to choose each columns you want to use and multiprocessing function. 
-
-[x] - Also you can provide a custom function of your own! (check Example)
+[x] - Dicionary for IDF transformation and general improvements
 
 
 
@@ -79,8 +77,9 @@ dataPCP = cane.pcp(df, n_coresJob=2,disableLoadBar = False, columns_use = ["x1",
 
 
 #dicionary with the transformed data
-
-dicionary = cane.dic_pcp(dataPCP)
+dataPCP = cane.pcp(df) 
+dicionary = cane.PCPDictionary(dataset = dataPCP, columnsUse = dataPCP.columns,
+                              targetColumn = None) #no target feature to avoid going into dictionary
 print(dicionary)
 
 dataIDF = cane.idf(df)  # uses the IDF method and only 1 core for all columns 
@@ -89,7 +88,10 @@ dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False)  # With Progress Bar
 dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False, columns_use = ["x1","x2"]) # specific columns
 dataIDF = cane.idf_multicolumn(df, columns_use = ["x1","x2"])  # aplication of specific multicolumn setting IDF
 
-
+idfDicionary = cane.idfDictionary(trOriginal = df, trainIDFTransformed = dataIDF, columns_use = ["x1","x2"]
+                                , targetColumn=None) #following the example above of the 2 columns
+                                
+                                
 dataH = cane.one_hot(df)  # without a column prefixer
 dataH2 = cane.one_hot(df, column_prefix='column')  # it will use the original column name prefix
 # (useful for when dealing with id number columns)

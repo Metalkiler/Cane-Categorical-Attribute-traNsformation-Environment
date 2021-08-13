@@ -36,7 +36,8 @@ def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
     return pd.Series(X if X in kept else mergeCategoryinner for X in f)
 
 
-def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1, disableLoadBar=True, columns_use=None):
+def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1, disableLoadBar=False,
+        columns_use=None):
     """
     The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to perc percent) into a
     single level. It works by first sorting the feature levels according to their frequency in the training data.
@@ -134,7 +135,7 @@ def pcp_multicolumn(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others",
     return TransformedData
 
 
-def idf_multicolumn(dataset, columns_use=None, disableLoadBar=True):
+def idf_multicolumn(dataset, columns_use=None, disableLoadBar=False):
     """
     The Inverse Document Frequency (IDF) uses f(x)= log(n/f_x),
     where n is the length of x and f_x is the frequency of x.
@@ -172,13 +173,32 @@ def idf_multicolumn(dataset, columns_use=None, disableLoadBar=True):
     return TransformedData
 
 
-def dic_pcp(dataset):
+def PCPDictionary(dataset=pd.DataFrame(), columnsUse=None, targetColumn=None):
     """
-    :param dataset: Dataset Transformed with the PCP
-    :return: Dictionary with the constitution of the PCP dataset for each column value
+    This function creates the dictionary to be used for the PCP transformation (on the test data).
+
+
+    Parameters
+    ----------
+    dataset
+    columnsUse
+
+    Returns
+    -------
+
     """
-    assert isinstance(dataset, pd.DataFrame) or isinstance(dataset, pd.Series), "Dataset needs to be of type Pandas"
-    return {k: {i: i for i in np.unique(v)} for k, v in dataset.items()}
+    DicColumnRenamer = {}
+    if columnsUse is None:
+        columns = dataset[dataset != targetColumn].tolist()
+        columnsUse = columns
+
+    for column in columnsUse:
+        # print(column)
+        name = dataset[column]
+        dataset[column] = dataset[column].astype("str")
+        DicColumnRenamer[column] = dict(zip(np.unique(dataset[[column]]), np.unique(name)))
+
+    return DicColumnRenamer
 
 
 def __idf_single__(f):
@@ -202,7 +222,7 @@ def __idf_single_dic__(f):
     return idf
 
 
-def idf(dataset, n_coresJob=1, disableLoadBar=True, columns_use=None):
+def idf(dataset, n_coresJob=1, disableLoadBar=False, columns_use=None):
     """
     The Inverse Document Frequency (IDF) uses f(x)= log(n/f_x),
     where n is the length of x and f_x is the frequency of x.
@@ -243,6 +263,38 @@ def idf(dataset, n_coresJob=1, disableLoadBar=True, columns_use=None):
             dfFinal = pd.concat([i for i in d], axis=1)
 
         return dfFinal
+
+
+def idfDictionary(Original=pd.DataFrame(), Transformed=pd.DataFrame, columns_use=None, targetColumn=None):
+    """
+    Creates the mapping for the IDF transformation in the test set using the training set
+
+    Parameters
+    ----------
+    trOriginal Original Data
+    trainIDFTransformed Data Transformed with idf
+    cols Columns that used IDF
+
+    Returns dictionary
+    -------
+
+    """
+    dic = dict()
+    if columns_use is None:
+        columns = Original[Original != targetColumn].tolist()
+        cols = columns
+
+    for col in columns_use:
+        df = pd.merge(Original[col], Transformed[col], left_index=True, right_index=True)
+        df = df.set_index(df.columns[0])
+        df.index.name = None
+        df = df.rename(columns={df.columns[0]: col})
+        df = df.to_dict('dict')
+
+        # dic = dict(dic, **items)
+        dic.update(df)
+
+    return dic
 
 
 def __one_hot_single__(dataset, column_prefix=None):

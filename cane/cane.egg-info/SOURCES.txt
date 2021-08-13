@@ -1,3 +1,4 @@
+LICENSE.txt
 README.md
 setup.py
 cane/__init__.py

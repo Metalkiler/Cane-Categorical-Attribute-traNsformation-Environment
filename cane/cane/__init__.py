@@ -36,7 +36,8 @@ def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
     return pd.Series(X if X in kept else mergeCategoryinner for X in f)
 
 
-def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1, disableLoadBar=True, columns_use=None):
+def pcp(dataset=pd.DataFrame(), perc=0.05, mergeCategory="Others", n_coresJob=1, disableLoadBar=False,
+        columns_use=None):
     """
     The Percentage Categorical Pruned (PCP) merges all least frequent levels (summing up to perc percent) into a
     single level. It works by first sorting the feature levels according to their frequency in the training data.
@@ -172,7 +173,7 @@ def idf_multicolumn(dataset, columns_use=None, disableLoadBar=False):
     return TransformedData
 
 
-def PCPDicionary(dataset, columnsUse, targetColumn):
+def PCPDictionary(dataset=pd.DataFrame(), columnsUse=None, targetColumn=None):
     """
     This function creates the dictionary to be used for the PCP transformation (on the test data).
 
@@ -264,7 +265,7 @@ def idf(dataset, n_coresJob=1, disableLoadBar=False, columns_use=None):
         return dfFinal
 
 
-def idfDicionary(trOriginal, trainIDFTransformed, cols, targetColumn=None):
+def idfDictionary(Original=pd.DataFrame(), Transformed=pd.DataFrame, columns_use=None, targetColumn=None):
     """
     Creates the mapping for the IDF transformation in the test set using the training set
 
@@ -279,12 +280,12 @@ def idfDicionary(trOriginal, trainIDFTransformed, cols, targetColumn=None):
 
     """
     dic = dict()
-    if cols is None:
-        columns = trOriginal[trOriginal != targetColumn].tolist()
+    if columns_use is None:
+        columns = Original[Original != targetColumn].tolist()
         cols = columns
 
-    for col in cols:
-        df = pd.merge(trOriginal[col], trainIDFTransformed[col], left_index=True, right_index=True)
+    for col in columns_use:
+        df = pd.merge(Original[col], Transformed[col], left_index=True, right_index=True)
         df = df.set_index(df.columns[0])
         df.index.name = None
         df = df.rename(columns={df.columns[0]: col})
