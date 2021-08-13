@@ -45,11 +45,9 @@ pip install cane
 ```
 
 # New
-Version 2.0.3:
+Version 2.0.4:
 
-[x] - Introduced a scaler function implementation based from skelearn package but allowing to choose each columns you want to use and multiprocessing function. 
-
-[x] - Also you can provide a custom function of your own! (check Example)
+[x] - Dicionary for IDF transformation and general improvements
 
 
 
