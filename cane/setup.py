@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(name='cane',
-                 version='2.0.4.2',
+                 version='2.1',
                  description='Cane - Categorical Attribute traNsformation Environment',
                  author='Luís Miguel Matos, Paulo Cortez, Rui Mendes',
                  license='MIT',
@@ -19,4 +19,4 @@ setuptools.setup(name='cane',
                      "Operating System :: OS Independent",
                  ],
                  url="https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment",
-                 python_requires='>=3.8')
+                 python_requires='>=3.6')

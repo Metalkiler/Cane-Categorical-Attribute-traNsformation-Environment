@@ -417,4 +417,4 @@ def scale_single_std(val):
 
 
 def __version__():
-    print("2.0.3")
+    print("2.1")
