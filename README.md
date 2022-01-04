@@ -45,9 +45,13 @@ pip install cane
 ```
 
 # New
-Version 2.0.4:
+Version 2.1.1:
 
-[x] - Dicionary for IDF transformation and general improvements
+[x] - Compatibility with python 3.6 and above
+
+[x] - Citation option (readme)
+
+
 
 
 
@@ -58,6 +62,36 @@ For questions and other suggestions contact luis.matos@dsi.uminho.pt
 Found any bugs? Post Them on the github page of the project! (https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment)
 
 Thanks for the support!
+
+# Citation
+To cite this module please use:
+
+```
+@misc{cane,
+author = {Lu{\'{i}}s Miguel Matos and Paulo Cortez and Rui Mendes},
+title = {{Cane - Categorical Attribute traNsformation Environment}},
+url = {https://pypi.org/project/cane/},
+year = {2020}
+}
+
+@inproceedings{DBLP:conf/ijcnn/Matos00M19,
+  author    = {Lu{\'{\i}}s Miguel Matos and
+               Paulo Cortez and
+               Rui Mendes and
+               Antoine Moreau},
+  title     = {Using Deep Learning for Mobile Marketing User Conversion Prediction},
+  booktitle = {International Joint Conference on Neural Networks, {IJCNN} 2019 Budapest,
+               Hungary, July 14-19, 2019},
+  pages     = {1--8},
+  publisher = {{IEEE}},
+  year      = {2019},
+  url       = {https://doi.org/10.1109/IJCNN.2019.8851888},
+  doi       = {10.1109/IJCNN.2019.8851888},
+  timestamp = {Mon, 15 Jun 2020 17:06:02 +0200},
+  biburl    = {https://dblp.org/rec/conf/ijcnn/Matos00M19.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+```
 
 # Example
 
