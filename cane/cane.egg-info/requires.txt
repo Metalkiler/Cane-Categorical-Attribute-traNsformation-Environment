@@ -8,3 +8,4 @@ tqdm
 typing-extensions
 pqdm
 sklearn
+pyspark

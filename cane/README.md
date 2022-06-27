@@ -25,7 +25,7 @@ This method results in 689 binary inputs, which is much less than the 10690 bina
 
 --> You can also provide a custom scaler version of your own! (check example)
 
-
+--> Use IDF with spark dataframes
 
 
 Future Function ideas:
@@ -45,11 +45,10 @@ pip install cane
 ```
 
 # New
-Version 2.1.1:
+Version 2.2:
 
-[x] - Compatibility with python 3.6 and above
+[x] - IDF with spark dataframes
 
-[x] - Citation option (readme)
 
 
 
@@ -188,6 +187,18 @@ print("PCP Time Multicore:",PTM)
 
 
 
+
+
+# IDF with pyspark configs
+import cane
+from pyspark.sql import SparkSession
+#Create PySpark SparkSession
+spark = SparkSession.builder.getOrCreate()
+#Create PySpark DataFrame from Pandas
+sparkDF=spark.createDataFrame(df)
+cols = sparkDF.columns
+DFIDF, idf = spark_idf_multicolumn(sparkDF, cols)
+print(DFIDF.show(20))
 ```
 
 # Scaler Example with cane

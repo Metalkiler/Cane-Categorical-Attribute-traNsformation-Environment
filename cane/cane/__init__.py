@@ -19,7 +19,13 @@ import numpy as np
 import pandas as pd
 from pqdm.processes import pqdm
 from tqdm import tqdm
+import math
+from itertools import chain
+from pyspark.sql.types import *
+from itertools import chain
 
+from pyspark.sql.column import Column
+import math
 
 def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
     """
@@ -416,5 +422,39 @@ def scale_single_std(val):
                         columns=[val.name + "_scalled_std"])
 
 
+#from pyspark.sql.functions import col, create_map, lit, when, isnull
+from pyspark.sql import functions as F
+def __idf_single_dic__spark__(f):
+    x = f.groupBy('values').count()
+    N = f.count()
+    idf = {}
+    rows = x.collect()
+    for i in range(0, x.count()):
+        idf[rows[i].__getitem__('values')] = math.log(N / rows[i].__getitem__('count'))
+    return idf
+
+def recode(col_name, map_dict, default=None):
+    if not isinstance(col_name, Column): # Allows either column name string or column instance to be passed
+        col_name = F.col(col_name)
+    mapping_expr = F.create_map([F.lit(x) for x in chain(*map_dict.items())])
+    
+    if default is None:
+        return  mapping_expr.getItem(col_name)
+    else:
+        return F.when(~F.isnull(mapping_expr.getItem(col_name)), mapping_expr.getItem(col_name)).otherwise(default)
+
+def spark_idf_multicolumn(dataframe, cols):
+    schema = StructType([StructField("values", StringType(), True)])
+    df = spark.createDataFrame([], schema)
+    for col in cols:
+        df = df.union(dataframe.select(col)) #dataframe
+        
+    idf = __idf_single_dic__spark__(df) #dictionary
+    
+    for col in cols:
+        dataframe = dataframe.withColumn(col, recode(col, idf))
+    
+    return dataframe, idf
+
 def __version__():
-    print("2.1")
+    print("2.2")

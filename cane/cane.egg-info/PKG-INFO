@@ -1,9 +1,9 @@
 Metadata-Version: 2.1
 Name: cane
-Version: 2.1.1
+Version: 2.2
 Summary: Cane - Categorical Attribute traNsformation Environment
 Home-page: https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment
-Author: Luís Miguel Matos, Paulo Cortez, Rui Mendes
+Author: Luís Miguel Matos, João Azevedo, Arthur Matta, André Pilastri, Paulo Cortez, Rui Mendes
 Author-email: luis.matos@dsi.uminho.pt
 License: MIT
 Description: # Cane - Categorical Attribute traNsformation Environment
@@ -33,7 +33,7 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         
         --> You can also provide a custom scaler version of your own! (check example)
         
-        
+        --> Use IDF with spark dataframes
         
         
         Future Function ideas:
@@ -53,11 +53,10 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         ```
         
         # New
-        Version 2.1.1:
+        Version 2.2:
         
-        [x] - Compatibility with python 3.6 and above
+        [x] - IDF with spark dataframes
         
-        [x] - Citation option (readme)
         
         
         
@@ -196,6 +195,18 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         
         
         
+        
+        
+        # IDF with pyspark configs
+        import cane
+        from pyspark.sql import SparkSession
+        #Create PySpark SparkSession
+        spark = SparkSession.builder.getOrCreate()
+        #Create PySpark DataFrame from Pandas
+        sparkDF=spark.createDataFrame(df)
+        cols = sparkDF.columns
+        DFIDF, idf = spark_idf_multicolumn(sparkDF, cols)
+        print(DFIDF.show(20))
         ```
         
         # Scaler Example with cane
