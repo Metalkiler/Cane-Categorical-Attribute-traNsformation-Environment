@@ -48,7 +48,7 @@ pip install cane
 Version 2.2:
 
 [x] - IDF with spark dataframes
-
+[x] - Improvements in the example file and readme
 
 
 
@@ -197,7 +197,7 @@ spark = SparkSession.builder.getOrCreate()
 #Create PySpark DataFrame from Pandas
 sparkDF=spark.createDataFrame(df)
 cols = sparkDF.columns
-DFIDF, idf = spark_idf_multicolumn(sparkDF, cols)
+DFIDF, idf = cane.spark_idf_multicolumn(sparkDF, cols)
 print(DFIDF.show(20))
 ```
 
