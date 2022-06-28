@@ -99,7 +99,7 @@ import pandas as pd
 import cane
 import timeit
 import numpy as np
-x = [k for s in ([k] * n for k, n in [('a', 30000), ('b', 50000), ('c', 70000), ('d', 10000), ('e', 1000)]) for k in s]
+x = [k for s in ([k] * n for k, n in [('a', 70000), ('b', 50000), ('c', 30000), ('d', 10000), ('e', 1000)]) for k in s]
 df = pd.DataFrame({f'x{i}' : x for i in range(1, 130)})
 
 dataPCP = cane.pcp(df)  # uses the PCP method and only 1 core with perc == 0.05 for all columns
