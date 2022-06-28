@@ -114,7 +114,7 @@ print("multicolumn idf \n", dataIDF2)
 
 # Time Measurement in 10 runs
 print("Time Measurement in 10 runs (unicore)")
-OT = timeit.timeit(lambda: cane.one_hot(df, column_prefix='column', n_coresJob=1), number=10)
+OT = timeit.timeit(lambda: cane.one_hot(df, column_prefix='column', n_coresJob=1, disableLoadBar=False), number=10)
 IT = timeit.timeit(lambda: cane.idf(df), number=10)
 PT = timeit.timeit(lambda: cane.pcp(df), number=10)
 print("One-Hot Time:", OT)
@@ -123,7 +123,7 @@ print("PCP Time:", PT)
 
 # Time Measurement in 10 runs (multicore)
 print("Time Measurement in 10 runs (multicore)")
-OTM = timeit.timeit(lambda: cane.one_hot(df, column_prefix='column', n_coresJob=10), number=10)
+OTM = timeit.timeit(lambda: cane.one_hot(df, column_prefix='column', n_coresJob=10, disableLoadBar=False), number=10)
 ITM = timeit.timeit(lambda: cane.idf(df, n_coresJob=10), number=10)
 PTM = timeit.timeit(lambda: cane.pcp(df, n_coresJob=10), number=10)
 print("One-Hot Time Multicore:", OTM)
@@ -136,9 +136,12 @@ from pyspark.sql import SparkSession
 
 print("Spark Example")
 # Create PySpark SparkSession
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+from pyspark.sql import functions as F
 spark = SparkSession.builder.getOrCreate()
 # Create PySpark DataFrame from Pandas
 sparkDF = spark.createDataFrame(df)
 cols = sparkDF.columns
-DFIDF, idf = spark_idf_multicolumn(sparkDF, cols) #with spark
+DFIDF, idf = cane.spark_idf_multicolumn(sparkDF, cols) #with spark
 print("Spark Example", DFIDF.show(20))

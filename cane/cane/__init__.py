@@ -23,7 +23,9 @@ import math
 from itertools import chain
 from pyspark.sql.types import *
 from itertools import chain
-
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+from pyspark.sql import functions as F
 from pyspark.sql.column import Column
 import math
 
@@ -444,7 +446,11 @@ def recode(col_name, map_dict, default=None):
         return F.when(~F.isnull(mapping_expr.getItem(col_name)), mapping_expr.getItem(col_name)).otherwise(default)
 
 def spark_idf_multicolumn(dataframe, cols):
-    schema = StructType([StructField("values", StringType(), True)])
+
+    schema = F.StructType([StructField("values", StringType(), True)])
+
+
+    spark = SparkSession.builder.getOrCreate()
     df = spark.createDataFrame([], schema)
     for col in cols:
         df = df.union(dataframe.select(col)) #dataframe

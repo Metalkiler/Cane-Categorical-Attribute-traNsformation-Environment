@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: cane
-Version: 2.2
+Version: 2.2.1.1
 Summary: Cane - Categorical Attribute traNsformation Environment
 Home-page: https://github.com/Metalkiler/Cane-Categorical-Attribute-traNsformation-Environment
 Author: Luís Miguel Matos, João Azevedo, Arthur Matta, André Pilastri, Paulo Cortez, Rui Mendes
@@ -56,7 +56,7 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         Version 2.2:
         
         [x] - IDF with spark dataframes
-        
+        [x] - Improvements in the example file and readme
         
         
         
@@ -205,7 +205,7 @@ Description: # Cane - Categorical Attribute traNsformation Environment
         #Create PySpark DataFrame from Pandas
         sparkDF=spark.createDataFrame(df)
         cols = sparkDF.columns
-        DFIDF, idf = spark_idf_multicolumn(sparkDF, cols)
+        DFIDF, idf = cane.spark_idf_multicolumn(sparkDF, cols)
         print(DFIDF.show(20))
         ```
         

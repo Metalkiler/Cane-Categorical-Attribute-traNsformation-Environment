@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(name='cane',
-                 version='2.2',
+                 version='2.2.1.1',
                  description='Cane - Categorical Attribute traNsformation Environment',
                  author='Luís Miguel Matos, João Azevedo, Arthur Matta, André Pilastri, Paulo Cortez, Rui Mendes',
                  license='MIT',
