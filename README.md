@@ -48,7 +48,7 @@ pip install cane
 Version 2.2:
 
 [x] - IDF with spark dataframes
-
+[x] - Improvements in the example file and readme
 
 
 
