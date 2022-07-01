@@ -22,12 +22,14 @@ from tqdm import tqdm
 import math
 from itertools import chain
 from pyspark.sql.types import *
-from itertools import chain
 from pyspark.sql import SparkSession
-from pyspark.sql.types import *
 from pyspark.sql import functions as F
 from pyspark.sql.column import Column
-import math
+import pyspark
+from pyspark.sql.window import Window
+from pyspark.sql.functions import col, create_map, lit, when, isnull
+
+
 
 def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
     """
@@ -461,6 +463,68 @@ def spark_idf_multicolumn(dataframe, cols):
         dataframe = dataframe.withColumn(col, recode(col, idf))
     
     return dataframe, idf
+
+def __pcp__(df, cols, perc=0.05, mergeCategoryinner="Others"):
+    
+    chave = {}
+    tresh = (1 - perc)
+    for col_ in cols:
+        dicionario = {}
+        df = df.withColumn(col_,col(col_).cast(StringType()))
+        df = df.fillna({col_:''})
+        data = df.value_counts(col_, normalize = True)
+        data = data.withColumn('cum_percent', F.sum(data.pct).over(Window.partitionBy().orderBy().rowsBetween(-sys.maxsize, 0)))
+        normaldata = data.where(data.cum_percent<= tresh)
+        pcpdata = data.where(data.cum_percent> tresh)
+        pcp = [pcpdata[0] for pcpdata in pcpdata.select(col_).collect()]
+        normal = [normaldata[0] for normaldata in normaldata.select(col_).collect()]
+        
+        chave[col_] = dicionario
+        
+        for categoria in pcp:
+                dicionario[categoria] = mergeCategoryinner
+        for categoria in normal:
+                dicionario[categoria] = categoria
+ 
+    return chave
+        
+def spark_pcp(dataframe, cols, perc, mergeCategoryinner):
+    pcp = __pcp__(dataframe, cols, perc, mergeCategoryinner) #dicionário
+    
+    for col in pcp.keys():
+        dataframe = dataframe.withColumn(col, recode(col, pcp[col]))
+        
+    return dataframe, pcp
+
+def valueCounts(self, subset, normalize = False, sort = True, ascending = False, show = True):
+  w = Window.partitionBy().rowsBetween(Window.unboundedPreceding, Window.unboundedFollowing)
+  
+  self = \
+  self\
+    .groupby(subset)\
+    .count()
+  
+  if sort:
+    self = self.sort('count', ascending = ascending)
+  else:
+    self = self.sort(subset)
+    
+  
+  if normalize:
+    self = \
+    self\
+    .withColumn('pct', F.round(F.col('count')/F.sum('count').over(w),20))\
+    .drop('count')
+  
+  if show:
+    return self
+  else:
+    return self
+
+pyspark.sql.DataFrame.value_counts = valueCounts
+
+
+
 
 def __version__():
     print("2.2")

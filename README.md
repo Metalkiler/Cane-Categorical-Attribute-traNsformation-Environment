@@ -186,7 +186,16 @@ print("IDF Time Multicore:",ITM)
 print("PCP Time Multicore:",PTM)
 
 
-
+#PCP with pyspark configs
+import cane
+from pyspark.sql import SparkSession
+#Create PySpark SparkSession
+spark = SparkSession.builder.getOrCreate()
+#Create PySpark DataFrame from Pandas
+sparkDF=spark.createDataFrame(df)
+cols = sparkDF.columns
+DFPCP, pcp = cane.spark_pcp(sparkDF, cols)
+DFPCP.show(20)
 
 
 # IDF with pyspark configs
