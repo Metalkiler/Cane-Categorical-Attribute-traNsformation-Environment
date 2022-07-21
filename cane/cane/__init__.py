@@ -1,4 +1,9 @@
-#     Luís Matos Copyright (c) 2020.
+#     Luís Matos Copyright (c) 2022.
+#   CANE Package Luís Miguel Matos, João Azevedo, Arthur Matta, André Pilastri, Paulo Cortez, Rui Mendes,
+#   Categorical Attribute traNsformation Environment (CANE): A python module for categorical to numeric
+#   data preprocessing,Software Impacts, 2022, 100359, ISSN 2665-9638,
+#   https://doi.org/10.1016/j.simpa.2022.100359.
+#   (https://www.sciencedirect.com/science/article/pii/S2665963822000720)
 #
 #     PCP transform: L.M. Matos, P. Cortez, R. Mendes, A. Moreau. Using Deep Learning for Mobile Marketing User
 #     Conversion Prediction. In Proceedings of the IEEE International Joint Conference on Neural Networks (IJCNN 2019),
@@ -11,6 +16,8 @@
 #     https://ieeexplore.ieee.org/document/8710472
 #     http://hdl.handle.net/1822/61586
 
+
+import sys
 import itertools
 import math
 from functools import partial
@@ -28,6 +35,9 @@ from pyspark.sql.types import *
 from pyspark.sql import functions as F
 from pyspark.sql.column import Column
 import math
+from pyspark.sql.window import Window
+import pyspark
+
 
 def __pcp_single__(f, perc_inner=0.05, mergeCategoryinner="Others"):
     """
@@ -273,7 +283,7 @@ def idf(dataset, n_coresJob=1, disableLoadBar=False, columns_use=None):
         return dfFinal
 
 
-def idfDictionary(Original=pd.DataFrame(), Transformed=pd.DataFrame, columns_use=None, targetColumn=None):
+def idfDictionary(Original=pd.DataFrame(), Transformed=pd.DataFrame, columns_use=None):
     """
     Creates the mapping for the IDF transformation in the test set using the training set
 
@@ -281,7 +291,7 @@ def idfDictionary(Original=pd.DataFrame(), Transformed=pd.DataFrame, columns_use
     ----------
     trOriginal Original Data
     trainIDFTransformed Data Transformed with idf
-    cols Columns that used IDF
+    columns_use Columns that used IDF
 
     Returns dictionary
     -------
@@ -289,8 +299,7 @@ def idfDictionary(Original=pd.DataFrame(), Transformed=pd.DataFrame, columns_use
     """
     dic = dict()
     if columns_use is None:
-        columns = Original[Original != targetColumn].tolist()
-        cols = columns
+        columns_use = Original.columns.tolist()
 
     for col in columns_use:
         df = pd.merge(Original[col], Transformed[col], left_index=True, right_index=True)
@@ -424,8 +433,10 @@ def scale_single_std(val):
                         columns=[val.name + "_scalled_std"])
 
 
-#from pyspark.sql.functions import col, create_map, lit, when, isnull
+# from pyspark.sql.functions import col, create_map, lit, when, isnull
 from pyspark.sql import functions as F
+
+
 def __idf_single_dic__spark__(f):
     x = f.groupBy('values').count()
     N = f.count()
@@ -435,32 +446,88 @@ def __idf_single_dic__spark__(f):
         idf[rows[i].__getitem__('values')] = math.log(N / rows[i].__getitem__('count'))
     return idf
 
+
 def recode(col_name, map_dict, default=None):
-    if not isinstance(col_name, Column): # Allows either column name string or column instance to be passed
+    if not isinstance(col_name, Column):  # Allows either column name string or column instance to be passed
         col_name = F.col(col_name)
     mapping_expr = F.create_map([F.lit(x) for x in chain(*map_dict.items())])
-    
+
     if default is None:
-        return  mapping_expr.getItem(col_name)
+        return mapping_expr.getItem(col_name)
     else:
         return F.when(~F.isnull(mapping_expr.getItem(col_name)), mapping_expr.getItem(col_name)).otherwise(default)
 
+
 def spark_idf_multicolumn(dataframe, cols):
-
-    schema = F.StructType([StructField("values", StringType(), True)])
-
+    schema = StructType([StructField("values", StringType(), True)])
 
     spark = SparkSession.builder.getOrCreate()
     df = spark.createDataFrame([], schema)
     for col in cols:
-        df = df.union(dataframe.select(col)) #dataframe
-        
-    idf = __idf_single_dic__spark__(df) #dictionary
-    
+        df = df.union(dataframe.select(col))  # dataframe
+
+    idf = __idf_single_dic__spark__(df)  # dictionary
+
     for col in cols:
         dataframe = dataframe.withColumn(col, recode(col, idf))
-    
+
     return dataframe, idf
 
+
+def __pcp__(df, cols, perc=0.05, mergeCategoryinner="Others"):
+    chave = {}
+    tresh = (1 - perc)
+    for col_ in cols:
+        dicionario = {}
+        df = df.withColumn(col_, F.col(col_).cast(StringType()))
+        df = df.fillna({col_: ''})
+        data = valueCounts(df, col_, normalize=True)
+        data = data.withColumn('cum_percent',
+                               F.sum(data.pct).over(Window.partitionBy().orderBy().rowsBetween(-sys.maxsize, 0)))
+        normaldata = data.where(data.cum_percent <= tresh)
+        pcpdata = data.where(data.cum_percent > tresh)
+        pcp = [pcpdata[0] for pcpdata in pcpdata.select(col_).collect()]
+        normal = [normaldata[0] for normaldata in normaldata.select(col_).collect()]
+
+        chave[col_] = dicionario
+
+        for categoria in pcp:
+            dicionario[categoria] = mergeCategoryinner
+        for categoria in normal:
+            dicionario[categoria] = categoria
+
+    return chave
+
+
+def spark_pcp(dataframe, cols, perc=0.05, mergeCategoryinner="Others"):
+    pcp = __pcp__(dataframe, cols, perc, mergeCategoryinner)  # dicionário
+
+    for col in pcp.keys():
+        dataframe = dataframe.withColumn(col, recode_pcp(col, pcp[col]))
+
+    return dataframe, pcp
+
+
+def recode_pcp(col_name, map_dict, default=None):
+    if not isinstance(col_name, Column):  # Allows either column name string or column instance to be passed
+        col_name = F.col(col_name)
+    mapping_expr = F.create_map([F.lit(x) for x in chain(*map_dict.items())])
+    if default is None:
+        return mapping_expr.getItem(col_name)
+    else:
+        return F.when(~F.isnull(mapping_expr.getItem(col_name)), mapping_expr.getItem(col_name)).otherwise(default)
+
+
+def valueCounts(df, subset, normalize=False):
+    w = Window.partitionBy().rowsBetween(Window.unboundedPreceding, Window.unboundedFollowing)
+
+    data = df.groupby(subset).count().sort(F.col(subset).asc())
+
+    if normalize:
+        data = data.withColumn('pct', F.round(F.col('count') / F.sum('count').over(w), 20)).drop('count')
+
+    return data
+
+
 def __version__():
-    print("2.2")
+    print("2.3")

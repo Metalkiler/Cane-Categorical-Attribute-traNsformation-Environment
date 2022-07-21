@@ -31,6 +31,7 @@ This method results in 689 binary inputs, which is much less than the 10690 bina
 Future Function ideas:
 -- 
 MultiColumn scale (based on the implementation of IDF and PCP)
+
 Scaling of IDF values (normalized IDF) 
 
 
@@ -45,10 +46,13 @@ pip install cane
 ```
 
 # New
-Version 2.2:
+Version 2.3:
 
-[x] - IDF with spark dataframes
+[x] - PCP with spark dataframes
+
 [x] - Improvements in the example file and readme
+
+[x] -  New Citation
 
 
 
@@ -66,30 +70,19 @@ Thanks for the support!
 To cite this module please use:
 
 ```
-@misc{cane,
-author = {Lu{\'{i}}s Miguel Matos and Paulo Cortez and Rui Mendes},
-title = {{Cane - Categorical Attribute traNsformation Environment}},
-url = {https://pypi.org/project/cane/},
-year = {2020}
-}
+@article{MATOS2022100359,
+	author = {Lu{\'\i}s Miguel Matos and Jo{\~a}o Azevedo and Arthur Matta and Andr{\'e} Pilastri and Paulo Cortez and Rui Mendes},
+	doi = {https://doi.org/10.1016/j.simpa.2022.100359},
+	issn = {2665-9638},
+	journal = {Software Impacts},
+	keywords = {Data preprocessing, CANE, Python programming language, Machine learning},
+	pages = {100359},
+	title = {Categorical Attribute traNsformation Environment (CANE): A python module for categorical to numeric data preprocessing},
+	url = {https://www.sciencedirect.com/science/article/pii/S2665963822000720},
+	year = {2022},
+	bdsk-url-1 = {https://www.sciencedirect.com/science/article/pii/S2665963822000720},
+	bdsk-url-2 = {https://doi.org/10.1016/j.simpa.2022.100359}}
 
-@inproceedings{DBLP:conf/ijcnn/Matos00M19,
-  author    = {Lu{\'{\i}}s Miguel Matos and
-               Paulo Cortez and
-               Rui Mendes and
-               Antoine Moreau},
-  title     = {Using Deep Learning for Mobile Marketing User Conversion Prediction},
-  booktitle = {International Joint Conference on Neural Networks, {IJCNN} 2019 Budapest,
-               Hungary, July 14-19, 2019},
-  pages     = {1--8},
-  publisher = {{IEEE}},
-  year      = {2019},
-  url       = {https://doi.org/10.1109/IJCNN.2019.8851888},
-  doi       = {10.1109/IJCNN.2019.8851888},
-  timestamp = {Mon, 15 Jun 2020 17:06:02 +0200},
-  biburl    = {https://dblp.org/rec/conf/ijcnn/Matos00M19.bib},
-  bibsource = {dblp computer science bibliography, https://dblp.org}
-}
 ```
 
 # Example
@@ -121,8 +114,7 @@ dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False)  # With Progress Bar
 dataIDF = cane.idf(df, n_coresJob=2,disableLoadBar = False, columns_use = ["x1","x2"]) # specific columns
 dataIDF = cane.idf_multicolumn(df, columns_use = ["x1","x2"])  # aplication of specific multicolumn setting IDF
 
-idfDicionary = cane.idfDictionary(Original = df, Transformed = dataIDF, columns_use = ["x1","x2"]
-                                , targetColumn=None) #following the example above of the 2 columns
+idfDicionary = cane.idfDictionary(Original = df, Transformed = dataIDF, columns_use = ["x1","x2"]) #following the example above of the 2 columns
                                 
                                 
 dataH = cane.one_hot(df)  # without a column prefixer
@@ -199,6 +191,24 @@ sparkDF=spark.createDataFrame(df)
 cols = sparkDF.columns
 DFIDF, idf = cane.spark_idf_multicolumn(sparkDF, cols)
 print(DFIDF.show(20))
+dataIDF = cane.idf(df)
+#check if it is correct:
+print(dataIDF.equals(DFIDF.toPandas())) #equals means correct for both pandas version and original
+
+
+#PCP with pyspark configs
+import cane
+from pyspark.sql import SparkSession
+#Create PySpark SparkSession
+spark = SparkSession.builder.getOrCreate()
+#Create PySpark DataFrame from Pandas
+sparkDF=spark.createDataFrame(df)
+cols = sparkDF.columns
+DFPCP, pcp = cane.spark_pcp(sparkDF, cols, 0.05, "Others")
+DFPCP.show(20)
+#check if it is correct:
+dataPCP = cane.pcp(df)
+print(dataPCP.equals(DFPCP.toPandas())) #equals means correct for both pandas version and original
 ```
 
 # Scaler Example with cane
@@ -207,8 +217,6 @@ These examples present the usage of cane with the standard methods (standard sca
 Also, it is presented how to implement a custom scaler function of your own with cane!
 ``` python
 #New Scaler Function 
-
-
 
 dfNumbers = pd.DataFrame(np.random.randint(0,100000,size=(100000, 12)), columns=list('ABCDEFGHIJKL'))
 cane.scale_data(dfNumbers, n_cores = 3, scaleFunc="min_max") # all columns using 3 cores

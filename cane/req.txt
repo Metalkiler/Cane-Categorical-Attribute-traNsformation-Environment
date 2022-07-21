@@ -9,3 +9,4 @@ typing-extensions
 pqdm
 sklearn
 pyspark
+pyarrow
