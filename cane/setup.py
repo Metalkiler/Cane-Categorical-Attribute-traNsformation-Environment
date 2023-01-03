@@ -12,7 +12,7 @@ setuptools.setup(name='cane',
                  long_description_content_type="text/markdown",
                  author_email='luis.matos@dsi.uminho.pt',
                  packages=setuptools.find_packages(),
-                 install_requires=["bounded-pool-executor","numpy","pandas","pqdm","python-dateutil","pytz","tqdm","typing-extensions","pqdm","sklearn", "pyspark", "pyarrow"],
+                 install_requires=["bounded-pool-executor","numpy","pandas","pqdm","python-dateutil","pytz","tqdm","typing-extensions","pqdm","scikit-learn", "pyspark", "pyarrow"],
                  classifiers=[
                      "Programming Language :: Python :: 3",
                      "License :: OSI Approved :: MIT License",
