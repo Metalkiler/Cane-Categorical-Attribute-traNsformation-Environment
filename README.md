@@ -32,7 +32,7 @@ Future Function ideas:
 -- 
 MultiColumn scale (based on the implementation of IDF and PCP)
 
-Scaling of IDF values (normalized IDF) 
+Scaling of IDF values (normalized IDF).
 
 
 
