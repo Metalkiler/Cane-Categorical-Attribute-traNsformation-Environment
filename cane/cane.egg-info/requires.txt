@@ -6,7 +6,6 @@ python-dateutil
 pytz
 tqdm
 typing-extensions
-pqdm
 scikit-learn
 pyspark
 pyarrow

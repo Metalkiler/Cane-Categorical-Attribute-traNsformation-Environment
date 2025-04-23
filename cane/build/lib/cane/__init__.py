@@ -1,4 +1,4 @@
-#     Luís Matos Copyright (c) 2022.
+#     Luís Matos Copyright (c) 2025.
 #   CANE Package Luís Miguel Matos, João Azevedo, Arthur Matta, André Pilastri, Paulo Cortez, Rui Mendes,
 #   Categorical Attribute traNsformation Environment (CANE): A python module for categorical to numeric
 #   data preprocessing,Software Impacts, 2022, 100359, ISSN 2665-9638,
@@ -283,7 +283,7 @@ def idf(dataset, n_coresJob=1, disableLoadBar=False, columns_use=None):
         return dfFinal
 
 
-def idfDictionary(Original=pd.DataFrame(), Transformed=pd.DataFrame, columns_use=None):
+def idfDictionary(Original=pd.DataFrame(), Transformed=pd.DataFrame, columns_use=None, targetColumn=None):
     """
     Creates the mapping for the IDF transformation in the test set using the training set
 
@@ -298,8 +298,10 @@ def idfDictionary(Original=pd.DataFrame(), Transformed=pd.DataFrame, columns_use
 
     """
     dic = dict()
+
     if columns_use is None:
-        columns_use = Original.columns.tolist()
+        columns = Original[Original != targetColumn].tolist()
+        columns_use = columns
 
     for col in columns_use:
         df = pd.merge(Original[col], Transformed[col], left_index=True, right_index=True)
@@ -323,13 +325,13 @@ def __one_hot_single__(dataset, column_prefix=None):
         :return: A new Dataset with the one-hot encoding transformation
     """
     if column_prefix is None:
-        data = pd.get_dummies(dataset)
+        data = pd.get_dummies(dataset,dtype=int)
     else:
         if column_prefix.lower() == 'column':
 
-            data = pd.get_dummies(dataset, prefix=dataset.name)
+            data = pd.get_dummies(dataset, prefix=dataset.name, dtype=int)
         else:
-            data = pd.get_dummies(dataset, prefix=column_prefix)
+            data = pd.get_dummies(dataset, prefix=column_prefix, dtype=int)
 
     return data
 
@@ -530,4 +532,4 @@ def valueCounts(df, subset, normalize=False):
 
 
 def __version__():
-    print("2.3")
+    print("2.4")

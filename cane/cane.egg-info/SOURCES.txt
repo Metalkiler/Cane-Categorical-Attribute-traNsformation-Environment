@@ -7,3 +7,4 @@ cane.egg-info/SOURCES.txt
 cane.egg-info/dependency_links.txt
 cane.egg-info/requires.txt
 cane.egg-info/top_level.txt
+tests/testPCP.py

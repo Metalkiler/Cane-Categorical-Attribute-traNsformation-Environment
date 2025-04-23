@@ -32,7 +32,7 @@ Future Function ideas:
 -- 
 MultiColumn scale (based on the implementation of IDF and PCP)
 
-Scaling of IDF values (normalized IDF).
+Scaling of IDF values (normalized IDF) 
 
 
 
@@ -46,14 +46,10 @@ pip install cane
 ```
 
 # New
-Version 2.3:
+Version 2.4:
 
-[x] - PCP with spark dataframes
-
-[x] - Improvements in the example file and readme
-
-[x] -  New Citation
-
+[x] - Fixed 1 Hot Encoding method (now returns integer values) <br/>
+[x] - Fixed Examples and Documentation
 
 
 

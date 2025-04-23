@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     ##idf
     datatransformed = cane.idf(df)
-    dicionaryIDF = cane.idfDicionary(df, datatransformed, datatransformed.columns) #geração de dicionário
+    dicionaryIDF = cane.idfDictionary(df, datatransformed, datatransformed.columns) #geração de dicionário
 
     datatransformed = cane.pcp(df)
-    dicionaryPCP = cane.PCPDicionary(df, datatransformed, datatransformed.columns)  # geração de dicionário
+    dicionaryPCP = cane.PCPDictionary(df, datatransformed, datatransformed.columns)  # geração de dicionário
